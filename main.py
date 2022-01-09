@@ -65,6 +65,6 @@ async def on_message(message):
 
 
 with open("token.json", "r") as f:
-    json_token = json.load(f)
-token = json_token["token"]
+    token = json.load(f)
+token = token["token"]
 client.run(token)
