@@ -1,0 +1,2 @@
+`nm!help`: 顯示此清單
+`nm!ping`: 檢測ping值
