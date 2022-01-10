@@ -19,7 +19,7 @@ logger.addHandler(handler)
 
 bot = commands.Bot(command_prefix="nm!", help_command=None)
 help_zh_tw = load_command.help_zh_tw_def()
-
+bot.remove_command("help")
 
 
 # 調用 event 函式庫
@@ -85,9 +85,7 @@ async def on_message(message):
 
 
 # 如果包含 dinner，機器人回傳 dinner list
-
-
-@bot.command
+@bot.command()
 async def help(ctx):
     await ctx.send(help_zh_tw)
 
