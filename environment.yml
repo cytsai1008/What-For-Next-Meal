@@ -1,0 +1,46 @@
+name: discord
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - aiodns=3.0.0=pyhd8ed1ab_0
+  - aiohttp=3.7.4.post0=py310he2412df_1
+  - async-timeout=3.0.1=py_1000
+  - attrs=21.4.0=pyhd8ed1ab_0
+  - brotli=1.0.9=h8ffe710_6
+  - brotli-bin=1.0.9=h8ffe710_6
+  - bzip2=1.0.8=h8ffe710_4
+  - ca-certificates=2021.10.8=h5b45459_0
+  - cchardet=2.1.7=py310h8a704f9_2
+  - cffi=1.15.0=py310hcbf9ad4_0
+  - chardet=4.0.0=py310h5588dad_2
+  - idna=3.1=pyhd3deb0d_0
+  - libbrotlicommon=1.0.9=h8ffe710_6
+  - libbrotlidec=1.0.9=h8ffe710_6
+  - libbrotlienc=1.0.9=h8ffe710_6
+  - libffi=3.4.2=h8ffe710_5
+  - libzlib=1.2.11=h8ffe710_1013
+  - multidict=5.2.0=py310he2412df_1
+  - openssl=3.0.0=h8ffe710_2
+  - orjson=3.6.5=py310h5588dad_1
+  - pip=21.3.1=pyhd8ed1ab_0
+  - py-cord=1.7.3=pyhd8ed1ab_0
+  - pycares=4.0.0=py310he2412df_1
+  - pycparser=2.21=pyhd8ed1ab_0
+  - pynacl=1.4.0=py310h4f637d6_3
+  - python=3.10.1=hcf16a7b_2_cpython
+  - python_abi=3.10=2_cp310
+  - setuptools=60.2.0=py310h5588dad_0
+  - six=1.16.0=pyh6c4a22f_0
+  - sqlite=3.37.0=h8ffe710_0
+  - tk=8.6.11=h8ffe710_1
+  - typing-extensions=4.0.1=hd8ed1ab_0
+  - typing_extensions=4.0.1=pyha770c72_0
+  - tzdata=2021e=he74cb21_0
+  - ucrt=10.0.20348.0=h57928b3_0
+  - vc=14.2=hb210afc_5
+  - vs2015_runtime=14.29.30037=h902a5da_5
+  - wheel=0.37.1=pyhd8ed1ab_0
+  - xz=5.2.5=h62dcd97_1
+  - yarl=1.7.2=py310he2412df_1
+
