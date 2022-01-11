@@ -95,6 +95,10 @@ async def ping(ctx):
     await ctx.send(f"Pong! {round(bot.latency * 1000)}ms")
 
 
+@bot.command()
+async def sl(ctx):
+    await ctx.send("Social Credit 👎")
+
 with open("token.json", "r") as f:
     token = json.load(f)
 token = token["token"]
