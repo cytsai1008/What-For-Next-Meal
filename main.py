@@ -59,30 +59,6 @@ async def status():
     await status()
 '''
 
-'''
-@bot.event
-# 當有訊息時
-async def on_message(message):
-    # 排除自己的訊息，避免陷入無限循環
-    if message.author == bot.user:
-        return
-    # 如果包含 ping，機器人回傳 pong
-
-
-
-    if message.content == 'nm!ping':
-        await message.channel.send()
-        print(f'Message from {message.author}: {message.content}')
-
-# 如果包含 help，機器人回傳 help
-
-
-
-    if message.content == 'nm!help':
-        await message.channel.send(help_zh_tw)
-        print(f'Message from {message.author}: {message.content}')
-'''
-
 
 # 如果包含 dinner，機器人回傳 dinner list
 @bot.command()
@@ -97,7 +73,9 @@ async def ping(ctx):
 
 @bot.command()
 async def sl(ctx):
-    await ctx.send("Social Credit 👎")
+    await ctx.send("Social Credit 👎\n"
+                   "https://www.idlememe.com/wp-content/uploads/2021/10/social-credit-meme-idlememe.jpg")
+
 
 with open("token.json", "r") as f:
     token = json.load(f)
