@@ -79,7 +79,7 @@ async def ping(ctx):
     await ctx.send(f"Pong! {round(bot.latency * 1000)}ms")
 
 
-@bot.command()
+@bot.command(Name="sl")
 async def sl(ctx):
     await ctx.send("Social Credit 👎\n"
                    "https://www.idlememe.com/wp-content/uploads/2021/10/social-credit-meme-idlememe.jpg")
@@ -97,20 +97,27 @@ async def add(ctx, *args):
         elif args[1] is type(None):
             await ctx.send(add_zh_tw)
             print("Error 02")
+        elif os.path.exists('db/{}.json'.format(server_id)):
+            with open('db/{}.json'.format(server_id), 'r') as f:
+                data = json.load(f)
+                del meal_list[0]
+                print(data)
+                for meal in meal_list:
+                    data[args[0]].append(meal)
+                # TODO: Remove Duplicate
+                print(args[0])
+                print(meal_list)
+                print(data)
+                json.dump(data, open('db/{}.json'.format(server_id), 'w'), indent=4)
         else:
-            await ctx.send('{} foods add into database'.format(len(args) - 1))
-            if os.path.exists('db/{}.json'.format(server_id)):
-                with open('db/{}.json'.format(server_id), 'r') as f:
-                    # TODO: Add key to json
-                    pass
-            else:
-                with open('db/{}.json'.format(server_id), 'w') as f:
-                    del meal_list[0]
-                    add_meal = {
-                        args[0]: meal_list
-                    }
-                    json.dump(add_meal, f, indent=4)
-
+            with open('db/{}.json'.format(server_id), 'w') as f:
+                del meal_list[0]
+                add_meal = {
+                    args[0]: meal_list
+                }
+                json.dump(add_meal, f, indent=4)
+                print("Warning 01")
+        await ctx.send('{} foods add into database'.format(len(args) - 1))
     except IndexError:
         await ctx.send(add_zh_tw)
         print("Error 03")
