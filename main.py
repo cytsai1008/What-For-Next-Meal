@@ -5,6 +5,7 @@ import asyncio
 import time
 import json
 import logging
+
 import load_command
 from load_command import *
 
@@ -18,7 +19,8 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 bot = commands.Bot(command_prefix="nm!", help_command=None)
-help_zh_tw = load_command.help_zh_tw_def()
+help_zh_tw = load_command.read_description("help/zh-tw.txt")
+add_zh_tw = load_command.read_description("add/zh-tw.txt")
 bot.remove_command("help")
 
 '''
@@ -85,36 +87,35 @@ async def sl(ctx):
 
 @bot.command(Name="add")
 async def add(ctx, *args):
-    print(args)
+    meal_list = list(args)
     server_id = ctx.message.guild.id
-    # args = dict(args)
+    print(server_id)
     try:
         if args[0] not in ["breakfast", "lunch", "dinner"]:
-            await ctx.send("錯誤餐名，請輸入\n"
-                           "`nm!add breakfast <食物>`\n"
-                           "`nm!add lunch <食物>`\n"
-                           "`nm!add dinner <食物>`")
+            await ctx.send(add_zh_tw)
+            print("Error 01")
         elif args[1] is type(None):
-            await ctx.send("錯誤餐名，請輸入\n"
-                           "`nm!add breakfast <食物>`\n"
-                           "`nm!add lunch <食物>`\n"
-                           "`nm!add dinner <食物>`")
+            await ctx.send(add_zh_tw)
+            print("Error 02")
         else:
-            await ctx.send('{} foods add into database'.format(len(args)-1))
-            print(server_id)
-            if os.path.exists('db/{}.json'.format(id)):
-                with open('db/{}.json'.format(id), 'r') as f:
+            await ctx.send('{} foods add into database'.format(len(args) - 1))
+            if os.path.exists('db/{}.json'.format(server_id)):
+                with open('db/{}.json'.format(server_id), 'r') as f:
                     # TODO: Add key to json
                     pass
+            else:
+                with open('db/{}.json'.format(server_id), 'w') as f:
+                    del meal_list[0]
+                    add_meal = {
+                        args[0]: meal_list
+                    }
+                    json.dump(add_meal, f, indent=4)
 
-    except:
-        await ctx.send("請輸入\n"
-                       "`nm!add breakfast <食物>`\n"
-                       "`nm!add lunch <食物>`\n"
-                       "`nm!add dinner <食物>`")
+    except IndexError:
+        await ctx.send(add_zh_tw)
+        print("Error 03")
 
 
 with open("token.json", "r") as f:
     token = json.load(f)
-token = token["token"]
-bot.run(token)
+bot.run(token["token"])
