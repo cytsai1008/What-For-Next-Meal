@@ -14,6 +14,8 @@ from discord.ext import commands
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
+if not os.path.exists('Log'):
+    os.mkdir('Log')
 handler = logging.FileHandler(filename='Log/discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
@@ -122,7 +124,15 @@ async def add(ctx, *args):
         await ctx.send(add_zh_tw)
         print("Error 03")
 
-
+if not os.path.exists("token.json"):
+    print("No token detected\n"
+          "please input your token from https://discord.com/developers/applications")
+    token_json = input()
+    with open("token.json", "w") as f:
+        token_dump = {
+            "token": token_json
+        }
+        json.dump(token_dump, f, indent=4)
 with open("token.json", "r") as f:
     token = json.load(f)
 bot.run(token["token"])
