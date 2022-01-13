@@ -1,13 +1,11 @@
-# discord bot
 import os
 import random
-import asyncio
+# import asyncio
 import time
 import json
 import logging
 
 import load_command
-from load_command import *
 
 import discord
 from discord.ext import commands
@@ -96,21 +94,43 @@ async def add(ctx, *args):
         if args[0] not in ["breakfast", "lunch", "dinner"]:
             await ctx.send(add_zh_tw)
             print("Error 01")
+            # Check args is correct
         elif args[1] is type(None):
             await ctx.send(add_zh_tw)
             print("Error 02")
+            # Check add data exists
         elif os.path.exists('db/{}.json'.format(server_id)):
+            # Check json exists
             with open('db/{}.json'.format(server_id), 'r') as f:
                 data = json.load(f)
                 del meal_list[0]
-                print(data)
+                # del args[0] from meal_list
+                try:
+                    print(f"data in {args[0]} is {data[args[0]]}")
+                except KeyError:
+                    data[args[0]] = []
+                # Check Key exists
+                print(f"data is {data}")
+                del_list = []
+                for i in range(len(data[args[0]])):
+                    print(f"i is {i}")
+                    for j in range(len(meal_list)):
+                        print(f"j is {j}")
+                        if data[args[0]][i] == meal_list[j]:
+                            del_list.append(meal_list[j])
+                # Add duplicate to del_list to delete
+                print(del_list)
+                for k in range(len(del_list)):
+                    meal_list.remove(del_list[k])
+                # Cleanup duplicate meal_list
                 for meal in meal_list:
                     data[args[0]].append(meal)
-                # TODO: Remove Duplicate
+                # Append meal_list to data
                 print(args[0])
                 print(meal_list)
                 print(data)
                 json.dump(data, open('db/{}.json'.format(server_id), 'w'), indent=4)
+                # Save data to json
         else:
             with open('db/{}.json'.format(server_id), 'w') as f:
                 del meal_list[0]
@@ -118,15 +138,17 @@ async def add(ctx, *args):
                     args[0]: meal_list
                 }
                 json.dump(add_meal, f, indent=4)
+            # Add new json to db
                 print("Warning 01")
-        await ctx.send('{} foods add into database'.format(len(args) - 1))
+        await ctx.send('{} foods add into {}'.format(len(meal_list), args[0]))
     except IndexError:
         await ctx.send(add_zh_tw)
         print("Error 03")
 
+
 if not os.path.exists("token.json"):
     print("No token detected\n"
-          "please input your token from https://discord.com/developers/applications")
+          "please input your token from https://discord.com/developers/applications:")
     token_json = input()
     with open("token.json", "w") as f:
         token_dump = {
