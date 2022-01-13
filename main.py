@@ -144,6 +144,7 @@ async def add(ctx, *args):
     except IndexError:
         await ctx.send(add_zh_tw)
         print("Error 03")
+    # If no args given
 
 
 if not os.path.exists("token.json"):
