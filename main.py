@@ -21,15 +21,13 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 bot = commands.Bot(command_prefix="nm!", help_command=None)
-help_zh_tw = load_command.read_description("help/zh-tw.txt")
-add_zh_tw = load_command.read_description("add/zh-tw.txt")
-bot.remove_command("help")
+help_zh_tw = load_command.read_description("help", "zh-tw")
+add_zh_tw = load_command.read_description("add", "zh-tw")
+remove_zh_tw = load_command.read_description("remove", "zh-tw")
+list_zh_tw = load_command.read_description("list", "zh-tw")
+random_zh_tw = load_command.read_description("random", "zh-tw")
 
-'''
-def check_meal(food):
-    if food not in ["breakfast", "lunch", "dinner"]:
-        return False
-'''
+bot.remove_command("help")
 
 
 # 調用 event 函式庫
@@ -146,7 +144,7 @@ async def add(ctx, *args):
                     args[0]: meal_list
                 }
                 json.dump(add_meal, f, indent=4)
-            # Add new json to db
+                # Add new json to db
                 print("Warning 01")
         if len(meal_list) == 0:
             await ctx.send(f"0 food added to {args[0]}")
@@ -158,6 +156,132 @@ async def add(ctx, *args):
         await ctx.send(add_zh_tw)
         print("Error 03")
     # If no args given
+
+
+@bot.command(Name="remove")
+async def remove(ctx, *args):
+    del_list = list(args)
+    try:
+        server_id = str(ctx.message.guild.id)
+    except:
+        server_id = "user_" + str(ctx.message.author.id)
+    print(server_id)
+    try:
+        if args[0] not in ["breakfast", "lunch", "dinner"]:
+            await ctx.send(remove_zh_tw)
+            print("Error 01")
+            # Check args is correct
+        elif args[1] is type(None):
+            await ctx.send(remove_zh_tw)
+            print("Error 02")
+            # Check remove data exists
+        elif os.path.exists('db/{}.json'.format(server_id)):
+            # Check json exists
+            with open('db/{}.json'.format(server_id), 'r') as f:
+                data = json.load(f)
+                del del_list[0]
+                # del args[0] from del_list
+                before_del = len(del_list)
+                try:
+                    print(f"data in {args[0]} is {data[args[0]]}")
+                except KeyError:
+                    data[args[0]] = []
+                # Check Key exists
+                del_key = []
+                print(f"data is {data}")
+                for i in range(len(data[args[0]])):
+                    for j in range(len(del_list)):
+                        if data[args[0]][i] == del_list[j]:
+                            del_key.append(del_list[j])
+                # Cleanup duplicate meal_list
+                print(del_list)
+                for k in range(len(del_key)):
+                    data[args[0]].remove(del_key[k])
+                # Remove del_list to data
+                after_del = len(del_key)
+                wrong_data = before_del - after_del
+                json.dump(data, open('db/{}.json'.format(server_id), 'w'), indent=4)
+                # Save data to json
+        else:
+            with open('db/{}.json'.format(server_id), 'w') as f:
+                json.dump({}, f, indent=4)
+                # Add new json to db
+                await ctx.send(f"No food in {args[0]}")
+                print("Warning 01")
+    except IndexError:
+        await ctx.send(remove_zh_tw)
+        print("Error 03")
+    if len(del_key) == 0:
+        await ctx.send(f"0 food deleted from {args[0]}")
+    elif len(del_key) >= 2:
+        await ctx.send('{} foods deleted to {} ({} not found)'.format(len(del_key), args[0], wrong_data))
+    elif len(del_key) == 1:
+        await ctx.send('{} food add into {} ({} duplicate)'.format(len(del_key), args[0], wrong_data))
+
+
+@bot.command(Name="show")
+async def show(ctx, *args):
+    try:
+        server_id = str(ctx.message.guild.id)
+    except:
+        server_id = "user_" + str(ctx.message.author.id)
+    print(server_id)
+    try:
+        if args[0] not in ["breakfast", "lunch", "dinner"]:
+            await ctx.send(list_zh_tw)
+            print("Error 01")
+            # Check args is correct
+        elif os.path.exists('db/{}.json'.format(server_id)):
+            # Check json exists
+            with open('db/{}.json'.format(server_id), 'r') as f:
+                data = json.load(f)
+                # Load json to data
+                if len(data[args[0]]) == 0:
+                    await ctx.send(f"No food in {args[0]}")
+                else:
+                    str_data = ", ".join(data[args[0]])
+                    await ctx.send(f"{args[0]} list: {str_data}")
+        else:
+            with open('db/{}.json'.format(server_id), 'w') as f:
+                json.dump({}, f, indent=4)
+                await ctx.send(f"No food in {args[0]}")
+                print("Warning 01")
+    except IndexError:
+        await ctx.send(list_zh_tw)
+        print("Error 03")
+
+
+@bot.command(Name="choose")
+async def choose(ctx, *args):
+    try:
+        server_id = str(ctx.message.guild.id)
+    except:
+        server_id = "user_" + str(ctx.message.author.id)
+    print(server_id)
+    try:
+        if args[0] not in ["breakfast", "lunch", "dinner"]:
+            # TODO: Get Time To Auto Choose Type
+            await ctx.send(random_zh_tw)
+            print("Error 01")
+            # Check args is correct
+        elif os.path.exists('db/{}.json'.format(server_id)):
+            # Check json exists
+            with open('db/{}.json'.format(server_id), 'r') as f:
+                data = json.load(f)
+                # Load json to data
+                if len(data[args[0]]) == 0:
+                    await ctx.send(f"No food in {args[0]}")
+                else:
+                    random_food = random.choice(data[args[0]])
+                    await ctx.send(f"Random food in {args[0]}: {random_food}")
+        else:
+            with open('db/{}.json'.format(server_id), 'w') as f:
+                json.dump({}, f, indent=4)
+                await ctx.send(f"No food in {args[0]}")
+                print("Warning 01")
+    except IndexError:
+        await ctx.send(random_zh_tw)
+        print("Error 03")
 
 
 if not os.path.exists("token.json"):

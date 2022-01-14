@@ -1,0 +1,4 @@
+請輸入
+`nm!show breakfast`
+`nm!show lunch`
+`nm!show dinner`
