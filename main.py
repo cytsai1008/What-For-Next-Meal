@@ -14,6 +14,8 @@ logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
 if not os.path.exists('Log'):
     os.mkdir('Log')
+if not os.path.exists('db'):
+    os.mkdir('db')
 handler = logging.FileHandler(filename='Log/discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
