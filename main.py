@@ -90,7 +90,10 @@ async def sl(ctx):
 @bot.command(Name="add")
 async def add(ctx, *args):
     meal_list = list(args)
-    server_id = ctx.message.guild.id
+    try:
+        server_id = str(ctx.message.guild.id)
+    except:
+        server_id = "user_" + str(ctx.message.author.id)
     print(server_id)
     try:
         if args[0] not in ["breakfast", "lunch", "dinner"]:
@@ -107,6 +110,7 @@ async def add(ctx, *args):
                 data = json.load(f)
                 del meal_list[0]
                 # del args[0] from meal_list
+                before_del = len(meal_list)
                 try:
                     print(f"data in {args[0]} is {data[args[0]]}")
                 except KeyError:
@@ -128,9 +132,11 @@ async def add(ctx, *args):
                 for meal in meal_list:
                     data[args[0]].append(meal)
                 # Append meal_list to data
+                after_del = len(meal_list)
                 print(args[0])
                 print(meal_list)
                 print(data)
+                duplicate_len = before_del - after_del
                 json.dump(data, open('db/{}.json'.format(server_id), 'w'), indent=4)
                 # Save data to json
         else:
@@ -142,7 +148,12 @@ async def add(ctx, *args):
                 json.dump(add_meal, f, indent=4)
             # Add new json to db
                 print("Warning 01")
-        await ctx.send('{} foods add into {}'.format(len(meal_list), args[0]))
+        if len(meal_list) == 0:
+            await ctx.send(f"0 food added to {args[0]}")
+        elif len(meal_list) >= 2:
+            await ctx.send('{} foods add into {} ({} duplicate)'.format(len(meal_list), args[0], duplicate_len))
+        elif len(meal_list) == 1:
+            await ctx.send('{} food add into {} ({} duplicate)'.format(len(meal_list), args[0], duplicate_len))
     except IndexError:
         await ctx.send(add_zh_tw)
         print("Error 03")
