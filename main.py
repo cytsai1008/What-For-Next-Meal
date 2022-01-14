@@ -236,6 +236,11 @@ async def show(ctx, *args):
             with open('db/{}.json'.format(server_id), 'r') as f:
                 data = json.load(f)
                 # Load json to data
+            try:
+                print(data[args[0]])
+            except KeyError:
+                await ctx.send(f"No food in {args[0]}")
+            else:
                 if len(data[args[0]]) == 0:
                     await ctx.send(f"No food in {args[0]}")
                 else:
@@ -287,6 +292,11 @@ async def choose(ctx, *args):
             with open('db/{}.json'.format(server_id), 'r') as f:
                 data = json.load(f)
                 # Load json to data
+            try:
+                print(data[args[0]])
+            except KeyError:
+                await ctx.send(f"No food in {args[0]}")
+            else:
                 if len(data[args[0]]) == 0:
                     await ctx.send(f"No food in {args[0]}")
                 else:
