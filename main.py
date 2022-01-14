@@ -214,9 +214,9 @@ async def remove(ctx, *args):
     if len(del_key) == 0:
         await ctx.send(f"0 food deleted from {args[0]}")
     elif len(del_key) >= 2:
-        await ctx.send('{} foods deleted to {} ({} not found)'.format(len(del_key), args[0], wrong_data))
+        await ctx.send('{} foods deleted from {} ({} not found)'.format(len(del_key), args[0], wrong_data))
     elif len(del_key) == 1:
-        await ctx.send('{} food add into {} ({} duplicate)'.format(len(del_key), args[0], wrong_data))
+        await ctx.send('{} food deleted from {} ({} duplicate)'.format(len(del_key), args[0], wrong_data))
 
 
 @bot.command(Name="show")
@@ -247,7 +247,26 @@ async def show(ctx, *args):
                 await ctx.send(f"No food in {args[0]}")
                 print("Warning 01")
     except IndexError:
-        await ctx.send(list_zh_tw)
+        with open('db/{}.json'.format(server_id), 'r') as f:
+            data = json.load(f)
+        try:
+            breakfast = data['breakfast']
+        except KeyError:
+            breakfast = []
+        try:
+            lunch = data['lunch']
+        except KeyError:
+            lunch = []
+        try:
+            dinner = data['dinner']
+        except KeyError:
+            dinner = []
+        breakfast = ", ".join(breakfast)
+        lunch = ", ".join(lunch)
+        dinner = ", ".join(dinner)
+        await ctx.send(f"breakfast list:{breakfast}\n"
+                       f"lunch list:{lunch}\n"
+                       f"dinner list:{dinner}")
         print("Error 03")
 
 
@@ -260,7 +279,6 @@ async def choose(ctx, *args):
     print(server_id)
     try:
         if args[0] not in ["breakfast", "lunch", "dinner"]:
-            # TODO: Get Time To Auto Choose Type
             await ctx.send(random_zh_tw)
             print("Error 01")
             # Check args is correct
@@ -280,6 +298,7 @@ async def choose(ctx, *args):
                 await ctx.send(f"No food in {args[0]}")
                 print("Warning 01")
     except IndexError:
+        # TODO: Get Time To Auto Choose Type
         await ctx.send(random_zh_tw)
         print("Error 03")
 
