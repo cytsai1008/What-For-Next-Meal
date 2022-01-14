@@ -20,7 +20,26 @@ handler = logging.FileHandler(filename='Log/discord.log', encoding='utf-8', mode
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
-bot = commands.Bot(command_prefix="nm!", help_command=None)
+if not os.path.exists("token.json"):
+    print("No token detected\n"
+          "please input your token from https://discord.com/developers/applications:")
+    token_json = input()
+    print("Please input your user id:")
+    user_id = input()
+    print("Please input your bot prefix:")
+    prefix = input()
+    with open("token.json", "w") as f:
+        token_dump = {
+            "token": token_json,
+            "owner": user_id,
+            "prefix": prefix
+        }
+        json.dump(token_dump, f, indent=4)
+with open("token.json", "r") as f:
+    token = json.load(f)
+
+bot = commands.Bot(command_prefix=token["prefix"], help_command=None)
+
 help_zh_tw = load_command.read_description("help", "zh-tw")
 add_zh_tw = load_command.read_description("add", "zh-tw")
 remove_zh_tw = load_command.read_description("remove", "zh-tw")
@@ -313,15 +332,15 @@ async def choose(ctx, *args):
         print("Error 03")
 
 
-if not os.path.exists("token.json"):
-    print("No token detected\n"
-          "please input your token from https://discord.com/developers/applications:")
-    token_json = input()
-    with open("token.json", "w") as f:
-        token_dump = {
-            "token": token_json
-        }
-        json.dump(token_dump, f, indent=4)
-with open("token.json", "r") as f:
-    token = json.load(f)
+@bot.command(Name="shutdown")
+async def shutdown(ctx):
+    sender = ctx.message.author.id
+    with open('token.json', 'r') as f:
+        owner = json.load(f)
+    owner = owner['owner']
+    if sender == owner:
+        await ctx.send("Shutting down...")
+        await bot.close()
+
+
 bot.run(token["token"])
