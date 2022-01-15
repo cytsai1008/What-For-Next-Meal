@@ -87,7 +87,6 @@ async def status():
 '''
 
 
-# 如果包含 dinner，機器人回傳 dinner list
 @bot.command(Name="help")
 async def help(ctx):
     await ctx.send(help_zh_tw)
@@ -404,6 +403,49 @@ async def choose(ctx, *args):
                 print("Warning 01")
     except IndexError:
         # TODO: Get Time To Auto Choose Type
+        current_utc = datetime.utcnow()
+        current_utc = current_utc.hour
+        if os.path.exists('db/{}.json'.format(server_id)):
+
+            try:
+                with open('db/{}.json'.format(server_id), 'r') as f:
+                    data = json.load(f)
+                # Load json to data
+            except KeyError:
+                await ctx.send(f'Please use `{token["prefix"]}time` to setup timezone.')
+            else:
+                current_time = current_utc + data['timezone']
+                if current_time in range(5,10):
+                    if len(data['breakfast']) == 0:
+                        await ctx.send('No food in breakfast')
+                    else:
+                        random.seed(str(datetime.now()))
+                        print(datetime.now())
+                        random_food = random.choice(data['breakfast'])
+                        await ctx.send(f"Random food in breakfast: {random_food}")
+                elif current_time in range(10,15):
+                    if len(data['lunch']) == 0:
+                        await ctx.send('No food in lunch')
+                    else:
+                        random.seed(str(datetime.now()))
+                        print(datetime.now())
+                        random_food = random.choice(data['lunch'])
+                        await ctx.send(f"Random food in lunch: {random_food}")
+                elif current_time in range(15,17):
+                    await ctx.send('Current not support afternoon tea.')
+                elif current_time in range(17,22):
+                    if len(data['dinner']) == 0:
+                        await ctx.send('No food in dinner')
+                    else:
+                        random.seed(str(datetime.now()))
+                        print(datetime.now())
+                        random_food = random.choice(data['dinner'])
+                        await ctx.send(f"Random food in dinner: {random_food}")
+                elif current_time in range(22, 24) or current_time in range(5):
+                    await ctx.send('Go to sleep.')
+                else:
+                    await ctx.send('I don't know how did you trigger this, please contact `@.')
+
         await ctx.send(random_zh_tw)
         print("Error 03")
 
