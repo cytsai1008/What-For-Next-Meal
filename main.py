@@ -1,7 +1,7 @@
 import os
 import random
 # import asyncio
-import time
+from datetime import datetime
 import json
 import logging
 
@@ -271,26 +271,100 @@ async def show(ctx, *args):
                 await ctx.send(f"No food in {args[0]}")
                 print("Warning 01")
     except IndexError:
-        with open('db/{}.json'.format(server_id), 'r') as f:
-            data = json.load(f)
-        try:
-            breakfast = data['breakfast']
-        except KeyError:
-            breakfast = []
-        try:
-            lunch = data['lunch']
-        except KeyError:
-            lunch = []
-        try:
-            dinner = data['dinner']
-        except KeyError:
-            dinner = []
-        breakfast = ", ".join(breakfast)
-        lunch = ", ".join(lunch)
-        dinner = ", ".join(dinner)
-        await ctx.send(f"breakfast list:{breakfast}\n"
-                       f"lunch list:{lunch}\n"
-                       f"dinner list:{dinner}")
+        if os.path.exists('db/{}.json'.format(server_id)):
+            with open('db/{}.json'.format(server_id), 'r') as f:
+                data = json.load(f)
+                # Load json to data
+            if len(data) == 0:
+                await ctx.send('No food in any list')
+            else:
+                try:
+                    breakfast = data['breakfast']
+                except KeyError:
+                    breakfast = []
+                try:
+                    lunch = data['lunch']
+                except KeyError:
+                    lunch = []
+                try:
+                    dinner = data['dinner']
+                except KeyError:
+                    dinner = []
+                breakfast = ", ".join(breakfast)
+                lunch = ", ".join(lunch)
+                dinner = ", ".join(dinner)
+                await ctx.send(f"breakfast list: {breakfast}\n"
+                               f"lunch list: {lunch}\n"
+                               f"dinner list: {dinner}")
+        else:
+            with open('db/{}.json'.format(server_id), 'w') as f:
+                json.dump({}, f, indent=4)
+                await ctx.send('No food in any list')
+        print("Error 03")
+
+
+@bot.command(Name="lists")
+async def lists(ctx, *args):
+    try:
+        server_id = str(ctx.message.guild.id)
+    except:
+        server_id = "user_" + str(ctx.message.author.id)
+    print(server_id)
+    try:
+        if args[0] not in ["breakfast", "lunch", "dinner"]:
+            await ctx.send(list_zh_tw)
+            print("Error 01")
+            # Check args is correct
+        elif os.path.exists('db/{}.json'.format(server_id)):
+            # Check json exists
+            with open('db/{}.json'.format(server_id), 'r') as f:
+                data = json.load(f)
+                # Load json to data
+            try:
+                print(data[args[0]])
+            except KeyError:
+                await ctx.send(f"No food in {args[0]}")
+            else:
+                if len(data[args[0]]) == 0:
+                    await ctx.send(f"No food in {args[0]}")
+                else:
+                    str_data = ", ".join(data[args[0]])
+                    await ctx.send(f"{args[0]} list: {str_data}")
+        else:
+            with open('db/{}.json'.format(server_id), 'w') as f:
+                json.dump({}, f, indent=4)
+                await ctx.send(f"No food in {args[0]}")
+                print("Warning 01")
+    except IndexError:
+        if os.path.exists('db/{}.json'.format(server_id)):
+            with open('db/{}.json'.format(server_id), 'r') as f:
+                data = json.load(f)
+                # Load json to data
+            if len(data) == 0:
+                await ctx.send('No food in any list')
+            else:
+                try:
+                    breakfast = data['breakfast']
+                except KeyError:
+                    breakfast = []
+                try:
+                    lunch = data['lunch']
+                except KeyError:
+                    lunch = []
+                try:
+                    dinner = data['dinner']
+                except KeyError:
+                    dinner = []
+                breakfast = ", ".join(breakfast)
+                lunch = ", ".join(lunch)
+                dinner = ", ".join(dinner)
+                await ctx.send(f"breakfast list: {breakfast}\n"
+                               f"lunch list: {lunch}\n"
+                               f"dinner list: {dinner}")
+        else:
+            with open('db/{}.json'.format(server_id), 'w') as f:
+                json.dump({}, f, indent=4)
+                await ctx.send('No food in any list')
         print("Error 03")
 
 
@@ -319,6 +393,8 @@ async def choose(ctx, *args):
                 if len(data[args[0]]) == 0:
                     await ctx.send(f"No food in {args[0]}")
                 else:
+                    random.seed(str(datetime.now()))
+                    print(datetime.now())
                     random_food = random.choice(data[args[0]])
                     await ctx.send(f"Random food in {args[0]}: {random_food}")
         else:
