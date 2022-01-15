@@ -114,11 +114,11 @@ async def add(ctx, *args):
     try:
         if args[0] not in ["breakfast", "lunch", "dinner"]:
             await ctx.send(add_zh_tw)
-            print("Error 01")
+            # print("Error 01")
             # Check args is correct
         elif args[1] is type(None):
             await ctx.send(add_zh_tw)
-            print("Error 02")
+            # print("Error 02")
             # Check add data exists
         elif os.path.exists('db/{}.json'.format(server_id)):
             # Check json exists
@@ -132,16 +132,16 @@ async def add(ctx, *args):
                 except KeyError:
                     data[args[0]] = []
                 # Check Key exists
-                print(f"data is {data}")
+                # print(f"data is {data}")
                 del_list = []
                 for i in range(len(data[args[0]])):
-                    print(f"i is {i}")
+                    # print(f"i is {i}")
                     for j in range(len(meal_list)):
-                        print(f"j is {j}")
+                        # print(f"j is {j}")
                         if data[args[0]][i] == meal_list[j]:
                             del_list.append(meal_list[j])
                 # Add duplicate to del_list to delete
-                print(del_list)
+                # print(del_list)
                 for k in range(len(del_list)):
                     meal_list.remove(del_list[k])
                 # Cleanup duplicate meal_list
@@ -163,7 +163,7 @@ async def add(ctx, *args):
                 }
                 json.dump(add_meal, f, indent=4)
                 # Add new json to db
-                print("Warning 01")
+                # print("Warning 01")
         if len(meal_list) == 0:
             await ctx.send(f"0 food added to {args[0]}")
         elif len(meal_list) >= 2:
@@ -172,7 +172,7 @@ async def add(ctx, *args):
             await ctx.send('{} food add into {} ({} duplicate)'.format(len(meal_list), args[0], duplicate_len))
     except IndexError:
         await ctx.send(add_zh_tw)
-        print("Error 03")
+        # print("Error 03")
     # If no args given
 
 
@@ -187,11 +187,11 @@ async def remove(ctx, *args):
     try:
         if args[0] not in ["breakfast", "lunch", "dinner"]:
             await ctx.send(remove_zh_tw)
-            print("Error 01")
+            # print("Error 01")
             # Check args is correct
         elif args[1] is type(None):
             await ctx.send(remove_zh_tw)
-            print("Error 02")
+            # print("Error 02")
             # Check remove data exists
         elif os.path.exists('db/{}.json'.format(server_id)):
             # Check json exists
@@ -206,13 +206,13 @@ async def remove(ctx, *args):
                     data[args[0]] = []
                 # Check Key exists
                 del_key = []
-                print(f"data is {data}")
+                # print(f"data is {data}")
                 for i in range(len(data[args[0]])):
                     for j in range(len(del_list)):
                         if data[args[0]][i] == del_list[j]:
                             del_key.append(del_list[j])
                 # Cleanup duplicate meal_list
-                print(del_list)
+                print(f"del_list is {del_list}")
                 for k in range(len(del_key)):
                     data[args[0]].remove(del_key[k])
                 # Remove del_list to data
@@ -225,10 +225,10 @@ async def remove(ctx, *args):
                 json.dump({}, f, indent=4)
                 # Add new json to db
                 await ctx.send(f"No food in {args[0]}")
-                print("Warning 01")
+                # print("Warning 01")
     except IndexError:
         await ctx.send(remove_zh_tw)
-        print("Error 03")
+        # print("Error 03")
     if len(del_key) == 0:
         await ctx.send(f"0 food deleted from {args[0]}")
     elif len(del_key) >= 2:
@@ -247,7 +247,7 @@ async def show(ctx, *args):
     try:
         if args[0] not in ["breakfast", "lunch", "dinner"]:
             await ctx.send(list_zh_tw)
-            print("Error 01")
+            # print("Error 01")
             # Check args is correct
         elif os.path.exists('db/{}.json'.format(server_id)):
             # Check json exists
@@ -268,7 +268,7 @@ async def show(ctx, *args):
             with open('db/{}.json'.format(server_id), 'w') as f:
                 json.dump({}, f, indent=4)
                 await ctx.send(f"No food in {args[0]}")
-                print("Warning 01")
+                # print("Warning 01")
     except IndexError:
         if os.path.exists('db/{}.json'.format(server_id)):
             with open('db/{}.json'.format(server_id), 'r') as f:
@@ -299,7 +299,7 @@ async def show(ctx, *args):
             with open('db/{}.json'.format(server_id), 'w') as f:
                 json.dump({}, f, indent=4)
                 await ctx.send('No food in any list')
-        print("Error 03")
+        # print("Error 03")
 
 
 @bot.command(Name="lists")
@@ -312,7 +312,7 @@ async def lists(ctx, *args):
     try:
         if args[0] not in ["breakfast", "lunch", "dinner"]:
             await ctx.send(list_zh_tw)
-            print("Error 01")
+            # print("Error 01")
             # Check args is correct
         elif os.path.exists('db/{}.json'.format(server_id)):
             # Check json exists
@@ -333,7 +333,7 @@ async def lists(ctx, *args):
             with open('db/{}.json'.format(server_id), 'w') as f:
                 json.dump({}, f, indent=4)
                 await ctx.send(f"No food in {args[0]}")
-                print("Warning 01")
+                # print("Warning 01")
     except IndexError:
         if os.path.exists('db/{}.json'.format(server_id)):
             with open('db/{}.json'.format(server_id), 'r') as f:
@@ -364,7 +364,7 @@ async def lists(ctx, *args):
             with open('db/{}.json'.format(server_id), 'w') as f:
                 json.dump({}, f, indent=4)
                 await ctx.send('No food in any list')
-        print("Error 03")
+        # print("Error 03")
 
 
 @bot.command(Name="choose")
@@ -377,7 +377,7 @@ async def choose(ctx, *args):
     try:
         if args[0] not in ["breakfast", "lunch", "dinner"]:
             await ctx.send(random_zh_tw)
-            print("Error 01")
+            # print("Error 01")
             # Check args is correct
         elif os.path.exists('db/{}.json'.format(server_id)):
             # Check json exists
@@ -393,14 +393,14 @@ async def choose(ctx, *args):
                     await ctx.send(f"No food in {args[0]}")
                 else:
                     random.seed(str(datetime.now()))
-                    print(datetime.now())
+                    # print(datetime.now())
                     random_food = random.choice(data[args[0]])
                     await ctx.send(f"Random food in {args[0]}: {random_food}")
         else:
             with open('db/{}.json'.format(server_id), 'w') as f:
                 json.dump({}, f, indent=4)
                 await ctx.send(f"No food in {args[0]}")
-                print("Warning 01")
+                # print("Warning 01")
     except IndexError:
         current_utc = datetime.utcnow()
         current_utc = current_utc.hour
@@ -425,7 +425,7 @@ async def choose(ctx, *args):
                             await ctx.send('No food in breakfast')
                         else:
                             random.seed(str(datetime.now()))
-                            print(datetime.now())
+                            # print(datetime.now())
                             random_food = random.choice(data['breakfast'])
                             await ctx.send(f"Random food in breakfast: {random_food}")
                     elif current_time in range(10, 15):
@@ -433,7 +433,7 @@ async def choose(ctx, *args):
                             await ctx.send('No food in lunch')
                         else:
                             random.seed(str(datetime.now()))
-                            print(datetime.now())
+                            # print(datetime.now())
                             random_food = random.choice(data['lunch'])
                             await ctx.send(f"Random food in lunch: {random_food}")
                     elif current_time in range(15, 17):
@@ -443,7 +443,7 @@ async def choose(ctx, *args):
                             await ctx.send('No food in dinner')
                         else:
                             random.seed(str(datetime.now()))
-                            print(datetime.now())
+                            # print(datetime.now())
                             random_food = random.choice(data['dinner'])
                             await ctx.send(f"Random food in dinner: {random_food}")
                     elif current_time in range(23, 24) or current_time in range(5):
@@ -464,7 +464,7 @@ async def choose(ctx, *args):
                     else:
                         await ctx.send("I don't know how did you trigger this, please contact `@(⊙ｏ⊙)#6773`.")
 
-        print("Error 03")
+        # print("Error 03")
 
 
 @bot.command(Name="shutdown")
@@ -496,7 +496,7 @@ async def time(ctx, *args):
             with open('db/{}.json'.format(server_id), 'r') as f:
                 data = json.load(f)
             data['timezone'] = int(tz)
-            print(data['timezone'])
+            # print(data['timezone'])
             with open('db/{}.json'.format(server_id), 'w') as f:
                 json.dump(data, f, indent=4)
             if data['timezone'] >= 0:
