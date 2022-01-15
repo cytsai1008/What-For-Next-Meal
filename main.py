@@ -402,7 +402,6 @@ async def choose(ctx, *args):
                 await ctx.send(f"No food in {args[0]}")
                 print("Warning 01")
     except IndexError:
-        # TODO: Get Time To Auto Choose Type
         current_utc = datetime.utcnow()
         current_utc = current_utc.hour
         if os.path.exists('db/{}.json'.format(server_id)):
@@ -415,7 +414,11 @@ async def choose(ctx, *args):
                 await ctx.send(f'Please use `{token["prefix"]}time` to setup timezone.')
             else:
                 current_time = current_utc + data['timezone']
-                if current_time in range(5,10):
+                if current_time >= 24:
+                    current_time = current_time - 24
+                elif current_time < 0:
+                    current_time = current_time + 24
+                if current_time in range(5, 10):
                     if len(data['breakfast']) == 0:
                         await ctx.send('No food in breakfast')
                     else:
@@ -423,7 +426,7 @@ async def choose(ctx, *args):
                         print(datetime.now())
                         random_food = random.choice(data['breakfast'])
                         await ctx.send(f"Random food in breakfast: {random_food}")
-                elif current_time in range(10,15):
+                elif current_time in range(10, 15):
                     if len(data['lunch']) == 0:
                         await ctx.send('No food in lunch')
                     else:
@@ -431,9 +434,9 @@ async def choose(ctx, *args):
                         print(datetime.now())
                         random_food = random.choice(data['lunch'])
                         await ctx.send(f"Random food in lunch: {random_food}")
-                elif current_time in range(15,17):
+                elif current_time in range(15, 17):
                     await ctx.send('Current not support afternoon tea.')
-                elif current_time in range(17,22):
+                elif current_time in range(17, 22):
                     if len(data['dinner']) == 0:
                         await ctx.send('No food in dinner')
                     else:
@@ -444,9 +447,8 @@ async def choose(ctx, *args):
                 elif current_time in range(22, 24) or current_time in range(5):
                     await ctx.send('Go to sleep.')
                 else:
-                    await ctx.send('I don't know how did you trigger this, please contact `@.')
+                    await ctx.send("I don't know how did you trigger this, please contact `@(⊙ｏ⊙)#6773`.")
 
-        await ctx.send(random_zh_tw)
         print("Error 03")
 
 
@@ -459,6 +461,43 @@ async def shutdown(ctx):
     if sender == owner:
         await ctx.send("Shutting down...")
         await bot.close()
+
+
+@bot.command(Name="time")
+async def time(ctx, *args):
+    try:
+        server_id = ctx.message.guild.id
+    except:
+        server_id = "user_" + str(ctx.message.author.id)
+    try:
+        if args[0] != int(args[0]):
+            await ctx.send("Please input a integer number.")
+        elif len(args) >= 2:
+            await ctx.send("Too many entry.")
+        elif args[0] < -12 or args[0] > 12:
+            await ctx.send("Please input a number between -12 and 12.")
+        elif os.path.exists('db/{}.json'.format(server_id)):
+            with open('db/{}.json'.format(server_id), 'r') as f:
+                data = json.load(f)
+            data['timezone'] = int(args[0])
+            print(data['timezone'])
+            json.dump(data, f, indent=4)
+            if data['timezone'] >= 0:
+                await ctx.send(f"Timezone set to UTC+{data['timezone']}")
+            else:
+                await ctx.send(f"Timezone set to UTC-{data['timezone']}")
+        else:
+            with open('db/{}.json'.format(server_id), 'w') as f:
+                data = {
+                    "timezone": int(args[0])
+                }
+                json.dump(data, f, indent=4)
+            if data['timezone'] >= 0:
+                await ctx.send(f"Timezone set to UTC+{data['timezone']}")
+            else:
+                await ctx.send(f"Timezone set to UTC-{data['timezone']}")
+    except IndexError:
+        await ctx.send("Please input a number.")
 
 
 bot.run(token["token"])
