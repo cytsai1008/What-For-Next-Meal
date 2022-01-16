@@ -560,9 +560,9 @@ async def time(ctx, *args):
                 await ctx.send("No timezone set, please input number to set.")
             else:
                 if data["timezone"] >= 0:
-                    await ctx.send(f"Timezone is to UTC+{data['timezone']}")
+                    await ctx.send(f"Timezone is set to UTC+{data['timezone']}")
                 else:
-                    await ctx.send(f"Timezone is to UTC{data['timezone']}")
+                    await ctx.send(f"Timezone is set to UTC{data['timezone']}")
         else:
             with open("db/{}.json".format(server_id), "w") as f:
                 data = {}
