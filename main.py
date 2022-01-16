@@ -12,30 +12,30 @@ import load_command
 
 # import time
 
-logger = logging.getLogger('discord')
+logger = logging.getLogger("discord")
 logger.setLevel(logging.DEBUG)
-if not os.path.exists('Log'):
-    os.mkdir('Log')
-if not os.path.exists('db'):
-    os.mkdir('db')
-handler = logging.FileHandler(filename='Log/discord.log', encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+if not os.path.exists("Log"):
+    os.mkdir("Log")
+if not os.path.exists("db"):
+    os.mkdir("db")
+handler = logging.FileHandler(filename="Log/discord.log", encoding="utf-8", mode="w")
+handler.setFormatter(
+    logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s")
+)
 logger.addHandler(handler)
 
 if not os.path.exists("token.json"):
-    print("No token detected\n"
-          "please input your token from https://discord.com/developers/applications:")
+    print(
+        "No token detected\n"
+        "please input your token from https://discord.com/developers/applications:"
+    )
     token_json = input()
     print("Please input your user id:")
     user_id = input()
     print("Please input your bot prefix:")
     prefix = input()
     with open("token.json", "w") as f:
-        token_dump = {
-            "token": token_json,
-            "owner": user_id,
-            "prefix": prefix
-        }
+        token_dump = {"token": token_json, "owner": user_id, "prefix": prefix}
         json.dump(token_dump, f, indent=4)
 with open("token.json", "r") as f:
     token = json.load(f)
@@ -55,13 +55,13 @@ bot.remove_command("help")
 @bot.event
 # 當機器人完成啟動時
 async def on_ready():
-    print('目前登入身份：', bot.user)
-    game = discord.Game('nm!help')
+    print("目前登入身份：", bot.user)
+    game = discord.Game("nm!help")
     # discord.Status.<狀態>，可以是online,offline,idle,dnd,invisible
     await bot.change_presence(status=discord.Status.online, activity=game)
 
 
-'''
+"""
 @bot.event
 async def change_presence():
     while True:
@@ -72,9 +72,9 @@ async def change_presence():
         print(type(rand_game))
         await bot.change_presence(status=discord.Status.online, activity=rand_game)
         await asyncio.sleep(10)
-'''
+"""
 
-'''
+"""
 @client.event
 
 async def status():
@@ -99,7 +99,7 @@ async def status():
     await game_status()
 
     await status()
-'''
+"""
 
 
 @bot.command(Name="help")
@@ -114,8 +114,10 @@ async def ping(ctx):
 
 @bot.command(Name="sl")
 async def sl(ctx):
-    await ctx.send("Social Credit 👎\n"
-                   "https://www.idlememe.com/wp-content/uploads/2021/10/social-credit-meme-idlememe.jpg")
+    await ctx.send(
+        "Social Credit 👎\n"
+        "https://www.idlememe.com/wp-content/uploads/2021/10/social-credit-meme-idlememe.jpg"
+    )
 
 
 @bot.command(Name="add")
@@ -135,9 +137,9 @@ async def add(ctx, *args):
             await ctx.send(add_zh_tw)
             # print("Error 02")
             # Check add data exists
-        elif os.path.exists('db/{}.json'.format(server_id)):
+        elif os.path.exists("db/{}.json".format(server_id)):
             # Check json exists
-            with open('db/{}.json'.format(server_id), 'r') as f:
+            with open("db/{}.json".format(server_id), "r") as f:
                 data = json.load(f)
                 del meal_list[0]
                 # del args[0] from meal_list
@@ -168,23 +170,29 @@ async def add(ctx, *args):
                 print(meal_list)
                 print(data)
                 duplicate_len = before_del - after_del
-                json.dump(data, open('db/{}.json'.format(server_id), 'w'), indent=4)
+                json.dump(data, open("db/{}.json".format(server_id), "w"), indent=4)
                 # Save data to json
         else:
-            with open('db/{}.json'.format(server_id), 'w') as f:
+            with open("db/{}.json".format(server_id), "w") as f:
                 del meal_list[0]
-                add_meal = {
-                    args[0]: meal_list
-                }
+                add_meal = {args[0]: meal_list}
                 json.dump(add_meal, f, indent=4)
                 # Add new json to db
                 # print("Warning 01")
         if len(meal_list) == 0:
             await ctx.send(f"0 food added to {args[0]}")
         elif len(meal_list) >= 2:
-            await ctx.send('{} foods add into {} ({} duplicate)'.format(len(meal_list), args[0], duplicate_len))
+            await ctx.send(
+                "{} foods add into {} ({} duplicate)".format(
+                    len(meal_list), args[0], duplicate_len
+                )
+            )
         elif len(meal_list) == 1:
-            await ctx.send('{} food add into {} ({} duplicate)'.format(len(meal_list), args[0], duplicate_len))
+            await ctx.send(
+                "{} food add into {} ({} duplicate)".format(
+                    len(meal_list), args[0], duplicate_len
+                )
+            )
     except IndexError:
         await ctx.send(add_zh_tw)
         # print("Error 03")
@@ -208,9 +216,9 @@ async def remove(ctx, *args):
             await ctx.send(remove_zh_tw)
             # print("Error 02")
             # Check remove data exists
-        elif os.path.exists('db/{}.json'.format(server_id)):
+        elif os.path.exists("db/{}.json".format(server_id)):
             # Check json exists
-            with open('db/{}.json'.format(server_id), 'r') as f:
+            with open("db/{}.json".format(server_id), "r") as f:
                 data = json.load(f)
                 del del_list[0]
                 # del args[0] from del_list
@@ -233,10 +241,10 @@ async def remove(ctx, *args):
                 # Remove del_list to data
                 after_del = len(del_key)
                 wrong_data = before_del - after_del
-                json.dump(data, open('db/{}.json'.format(server_id), 'w'), indent=4)
+                json.dump(data, open("db/{}.json".format(server_id), "w"), indent=4)
                 # Save data to json
         else:
-            with open('db/{}.json'.format(server_id), 'w') as f:
+            with open("db/{}.json".format(server_id), "w") as f:
                 json.dump({}, f, indent=4)
                 # Add new json to db
                 await ctx.send(f"No food in {args[0]}")
@@ -247,9 +255,17 @@ async def remove(ctx, *args):
     if len(del_key) == 0:
         await ctx.send(f"0 food deleted from {args[0]}")
     elif len(del_key) >= 2:
-        await ctx.send('{} foods deleted from {} ({} not found)'.format(len(del_key), args[0], wrong_data))
+        await ctx.send(
+            "{} foods deleted from {} ({} not found)".format(
+                len(del_key), args[0], wrong_data
+            )
+        )
     elif len(del_key) == 1:
-        await ctx.send('{} food deleted from {} ({} duplicate)'.format(len(del_key), args[0], wrong_data))
+        await ctx.send(
+            "{} food deleted from {} ({} duplicate)".format(
+                len(del_key), args[0], wrong_data
+            )
+        )
 
 
 @bot.command(Name="show")
@@ -264,9 +280,9 @@ async def show(ctx, *args):
             await ctx.send(list_zh_tw)
             # print("Error 01")
             # Check args is correct
-        elif os.path.exists('db/{}.json'.format(server_id)):
+        elif os.path.exists("db/{}.json".format(server_id)):
             # Check json exists
-            with open('db/{}.json'.format(server_id), 'r') as f:
+            with open("db/{}.json".format(server_id), "r") as f:
                 data = json.load(f)
                 # Load json to data
             try:
@@ -280,40 +296,42 @@ async def show(ctx, *args):
                     str_data = ", ".join(data[args[0]])
                     await ctx.send(f"{args[0]} list: {str_data}")
         else:
-            with open('db/{}.json'.format(server_id), 'w') as f:
+            with open("db/{}.json".format(server_id), "w") as f:
                 json.dump({}, f, indent=4)
                 await ctx.send(f"No food in {args[0]}")
                 # print("Warning 01")
     except IndexError:
-        if os.path.exists('db/{}.json'.format(server_id)):
-            with open('db/{}.json'.format(server_id), 'r') as f:
+        if os.path.exists("db/{}.json".format(server_id)):
+            with open("db/{}.json".format(server_id), "r") as f:
                 data = json.load(f)
                 # Load json to data
             if len(data) == 0:
-                await ctx.send('No food in any list')
+                await ctx.send("No food in any list")
             else:
                 try:
-                    breakfast = data['breakfast']
+                    breakfast = data["breakfast"]
                 except KeyError:
                     breakfast = []
                 try:
-                    lunch = data['lunch']
+                    lunch = data["lunch"]
                 except KeyError:
                     lunch = []
                 try:
-                    dinner = data['dinner']
+                    dinner = data["dinner"]
                 except KeyError:
                     dinner = []
                 breakfast = ", ".join(breakfast)
                 lunch = ", ".join(lunch)
                 dinner = ", ".join(dinner)
-                await ctx.send(f"breakfast list: {breakfast}\n"
-                               f"lunch list: {lunch}\n"
-                               f"dinner list: {dinner}")
+                await ctx.send(
+                    f"breakfast list: {breakfast}\n"
+                    f"lunch list: {lunch}\n"
+                    f"dinner list: {dinner}"
+                )
         else:
-            with open('db/{}.json'.format(server_id), 'w') as f:
+            with open("db/{}.json".format(server_id), "w") as f:
                 json.dump({}, f, indent=4)
-                await ctx.send('No food in any list')
+                await ctx.send("No food in any list")
         # print("Error 03")
 
 
@@ -329,9 +347,9 @@ async def lists(ctx, *args):
             await ctx.send(list_zh_tw)
             # print("Error 01")
             # Check args is correct
-        elif os.path.exists('db/{}.json'.format(server_id)):
+        elif os.path.exists("db/{}.json".format(server_id)):
             # Check json exists
-            with open('db/{}.json'.format(server_id), 'r') as f:
+            with open("db/{}.json".format(server_id), "r") as f:
                 data = json.load(f)
                 # Load json to data
             try:
@@ -345,40 +363,42 @@ async def lists(ctx, *args):
                     str_data = ", ".join(data[args[0]])
                     await ctx.send(f"{args[0]} list: {str_data}")
         else:
-            with open('db/{}.json'.format(server_id), 'w') as f:
+            with open("db/{}.json".format(server_id), "w") as f:
                 json.dump({}, f, indent=4)
                 await ctx.send(f"No food in {args[0]}")
                 # print("Warning 01")
     except IndexError:
-        if os.path.exists('db/{}.json'.format(server_id)):
-            with open('db/{}.json'.format(server_id), 'r') as f:
+        if os.path.exists("db/{}.json".format(server_id)):
+            with open("db/{}.json".format(server_id), "r") as f:
                 data = json.load(f)
                 # Load json to data
             if len(data) == 0:
-                await ctx.send('No food in any list')
+                await ctx.send("No food in any list")
             else:
                 try:
-                    breakfast = data['breakfast']
+                    breakfast = data["breakfast"]
                 except KeyError:
                     breakfast = []
                 try:
-                    lunch = data['lunch']
+                    lunch = data["lunch"]
                 except KeyError:
                     lunch = []
                 try:
-                    dinner = data['dinner']
+                    dinner = data["dinner"]
                 except KeyError:
                     dinner = []
                 breakfast = ", ".join(breakfast)
                 lunch = ", ".join(lunch)
                 dinner = ", ".join(dinner)
-                await ctx.send(f"breakfast list: {breakfast}\n"
-                               f"lunch list: {lunch}\n"
-                               f"dinner list: {dinner}")
+                await ctx.send(
+                    f"breakfast list: {breakfast}\n"
+                    f"lunch list: {lunch}\n"
+                    f"dinner list: {dinner}"
+                )
         else:
-            with open('db/{}.json'.format(server_id), 'w') as f:
+            with open("db/{}.json".format(server_id), "w") as f:
                 json.dump({}, f, indent=4)
-                await ctx.send('No food in any list')
+                await ctx.send("No food in any list")
         # print("Error 03")
 
 
@@ -394,9 +414,9 @@ async def choose(ctx, *args):
             await ctx.send(random_zh_tw)
             # print("Error 01")
             # Check args is correct
-        elif os.path.exists('db/{}.json'.format(server_id)):
+        elif os.path.exists("db/{}.json".format(server_id)):
             # Check json exists
-            with open('db/{}.json'.format(server_id), 'r') as f:
+            with open("db/{}.json".format(server_id), "r") as f:
                 data = json.load(f)
                 # Load json to data
             try:
@@ -412,72 +432,76 @@ async def choose(ctx, *args):
                     random_food = random.choice(data[args[0]])
                     await ctx.send(f"Random food in {args[0]}: {random_food}")
         else:
-            with open('db/{}.json'.format(server_id), 'w') as f:
+            with open("db/{}.json".format(server_id), "w") as f:
                 json.dump({}, f, indent=4)
                 await ctx.send(f"No food in {args[0]}")
                 # print("Warning 01")
     except IndexError:
         current_utc = datetime.utcnow()
         current_utc = current_utc.hour
-        if os.path.exists('db/{}.json'.format(server_id)):
+        if os.path.exists("db/{}.json".format(server_id)):
 
             try:
-                with open('db/{}.json'.format(server_id), 'r') as f:
+                with open("db/{}.json".format(server_id), "r") as f:
                     data = json.load(f)
                     print(data["timezone"])
                 # Load json to data
             except KeyError:
                 await ctx.send(f'Please use `{token["prefix"]}time` to setup timezone.')
             else:
-                current_time = current_utc + data['timezone']
+                current_time = current_utc + data["timezone"]
                 if current_time >= 24:
                     current_time = current_time - 24
                 elif current_time < 0:
                     current_time = current_time + 24
                 try:
                     if current_time in range(5, 10):
-                        if len(data['breakfast']) == 0:
-                            await ctx.send('No food in breakfast')
+                        if len(data["breakfast"]) == 0:
+                            await ctx.send("No food in breakfast")
                         else:
                             random.seed(str(datetime.now()))
                             # print(datetime.now())
-                            random_food = random.choice(data['breakfast'])
+                            random_food = random.choice(data["breakfast"])
                             await ctx.send(f"Random food in breakfast: {random_food}")
                     elif current_time in range(10, 15):
-                        if len(data['lunch']) == 0:
-                            await ctx.send('No food in lunch')
+                        if len(data["lunch"]) == 0:
+                            await ctx.send("No food in lunch")
                         else:
                             random.seed(str(datetime.now()))
                             # print(datetime.now())
-                            random_food = random.choice(data['lunch'])
+                            random_food = random.choice(data["lunch"])
                             await ctx.send(f"Random food in lunch: {random_food}")
                     elif current_time in range(15, 17):
-                        await ctx.send('Current not support afternoon tea.')
+                        await ctx.send("Current not support afternoon tea.")
                     elif current_time in range(17, 23):
-                        if len(data['dinner']) == 0:
-                            await ctx.send('No food in dinner')
+                        if len(data["dinner"]) == 0:
+                            await ctx.send("No food in dinner")
                         else:
                             random.seed(str(datetime.now()))
                             # print(datetime.now())
-                            random_food = random.choice(data['dinner'])
+                            random_food = random.choice(data["dinner"])
                             await ctx.send(f"Random food in dinner: {random_food}")
                     elif current_time in range(23, 24) or current_time in range(5):
-                        await ctx.send('Go to sleep.')
+                        await ctx.send("Go to sleep.")
                     else:
-                        await ctx.send("I don't know how did you trigger this, please contact `@(⊙ｏ⊙)#6773`.")
+                        await ctx.send(
+                            "I don't know how did you trigger this, please contact `@(⊙ｏ⊙)#6773`."
+                        )
                 except KeyError:
                     if current_time in range(5, 10):
-                        await ctx.send('No food in breakfast')
+                        await ctx.send("No food in breakfast")
                     elif current_time in range(10, 15):
-                        await ctx.send('No food in lunch')
+                        await ctx.send("No food in lunch")
                     elif current_time in range(14, 17):
-                        await ctx.send('Current not support afternoon tea.')
+                        await ctx.send("Current not support afternoon tea.")
                     elif current_time in range(17, 23):
-                        await ctx.send('No food in dinner')
+                        await ctx.send("No food in dinner")
                     elif current_time in range(23, 24) or current_time in range(5):
-                        await ctx.send('Go to sleep.')
+                        await ctx.send("Go to sleep.")
                     else:
-                        await ctx.send("I don't know how did you trigger this, please contact `@(⊙ｏ⊙)#6773`.")
+                        await ctx.send(
+                            "I don't know how did you trigger this, please contact `@(⊙ｏ⊙)#6773`."
+                        )
 
         # print("Error 03")
 
@@ -485,9 +509,9 @@ async def choose(ctx, *args):
 @bot.command(Name="shutdown")
 async def shutdown(ctx):
     sender = ctx.message.author.id
-    with open('token.json', 'r') as f:
+    with open("token.json", "r") as f:
         owner = json.load(f)
-    owner = owner['owner']
+    owner = owner["owner"]
     if sender == owner:
         await ctx.send("Shutting down...")
         await bot.close()
@@ -507,42 +531,40 @@ async def time(ctx, *args):
             await ctx.send("Too many entry.")
         elif tz < -12 or tz > 12:
             await ctx.send("Please input a number between -12 and 12.")
-        elif os.path.exists('db/{}.json'.format(server_id)):
-            with open('db/{}.json'.format(server_id), 'r') as f:
+        elif os.path.exists("db/{}.json".format(server_id)):
+            with open("db/{}.json".format(server_id), "r") as f:
                 data = json.load(f)
-            data['timezone'] = int(tz)
+            data["timezone"] = int(tz)
             # print(data['timezone'])
-            with open('db/{}.json'.format(server_id), 'w') as f:
+            with open("db/{}.json".format(server_id), "w") as f:
                 json.dump(data, f, indent=4)
-            if data['timezone'] >= 0:
+            if data["timezone"] >= 0:
                 await ctx.send(f"Timezone set to UTC+{data['timezone']}")
             else:
                 await ctx.send(f"Timezone set to UTC-{data['timezone']}")
         else:
-            with open('db/{}.json'.format(server_id), 'w') as f:
-                data = {
-                    "timezone": int(tz)
-                }
+            with open("db/{}.json".format(server_id), "w") as f:
+                data = {"timezone": int(tz)}
                 json.dump(data, f, indent=4)
-            if data['timezone'] >= 0:
+            if data["timezone"] >= 0:
                 await ctx.send(f"Timezone set to UTC+{data['timezone']}")
             else:
                 await ctx.send(f"Timezone set to UTC{data['timezone']}")
     except IndexError:
-        if os.path.exists('db/{}.json'.format(server_id)):
-            with open('db/{}.json'.format(server_id), 'r') as f:
+        if os.path.exists("db/{}.json".format(server_id)):
+            with open("db/{}.json".format(server_id), "r") as f:
                 data = json.load(f)
             try:
-                print(data['timezone'])
+                print(data["timezone"])
             except KeyError:
                 await ctx.send("No timezone set, please input number to set.")
             else:
-                if data['timezone'] >= 0:
+                if data["timezone"] >= 0:
                     await ctx.send(f"Timezone is to UTC+{data['timezone']}")
                 else:
                     await ctx.send(f"Timezone is to UTC{data['timezone']}")
         else:
-            with open('db/{}.json'.format(server_id), 'w') as f:
+            with open("db/{}.json".format(server_id), "w") as f:
                 data = {}
                 json.dump(data, f, indent=4)
 
