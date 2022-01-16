@@ -1,14 +1,16 @@
-import os
-import random
-# import asyncio
-from datetime import datetime
+import asyncio
 import json
 import logging
-
-import load_command
+import os
+import random
+from datetime import datetime
 
 import discord
 from discord.ext import commands
+
+import load_command
+
+# import time
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
@@ -58,6 +60,19 @@ async def on_ready():
     # discord.Status.<狀態>，可以是online,offline,idle,dnd,invisible
     await bot.change_presence(status=discord.Status.online, activity=game)
 
+
+'''
+@bot.event
+async def change_presence():
+    while True:
+        rand_stat = random.choice(
+            ['nm!help', 'nm!ping', 'nm!show', 'nm!choose', 'https://github.com/cytsai1008/What-For-Next-Meal',
+             'nm!lists', 'nm!add', 'nm!remove', 'nm!random'])
+        rand_game = discord.Game(rand_stat)
+        print(type(rand_game))
+        await bot.change_presence(status=discord.Status.online, activity=rand_game)
+        await asyncio.sleep(10)
+'''
 
 '''
 @client.event
@@ -514,7 +529,22 @@ async def time(ctx, *args):
             else:
                 await ctx.send(f"Timezone set to UTC{data['timezone']}")
     except IndexError:
-        await ctx.send("Please input number.")
+        if os.path.exists('db/{}.json'.format(server_id)):
+            with open('db/{}.json'.format(server_id), 'r') as f:
+                data = json.load(f)
+            try:
+                print(data['timezone'])
+            except KeyError:
+                await ctx.send("No timezone set, please input number to set.")
+            else:
+                if data['timezone'] >= 0:
+                    await ctx.send(f"Timezone is to UTC+{data['timezone']}")
+                else:
+                    await ctx.send(f"Timezone is to UTC{data['timezone']}")
+        else:
+            with open('db/{}.json'.format(server_id), 'w') as f:
+                data = {}
+                json.dump(data, f, indent=4)
 
 
 bot.run(token["token"])
