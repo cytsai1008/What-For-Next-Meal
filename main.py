@@ -9,6 +9,7 @@ import discord
 from discord.ext import commands
 
 import load_command
+import tool_function
 
 # import time
 
