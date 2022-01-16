@@ -539,9 +539,9 @@ async def time(ctx, *args):
             with open("db/{}.json".format(server_id), "w") as f:
                 json.dump(data, f, indent=4)
             if data["timezone"] >= 0:
-                await ctx.send(f"Timezone set to UTC+{data['timezone']}")
+                await ctx.send(f"Timezone is set to UTC+{data['timezone']}")
             else:
-                await ctx.send(f"Timezone set to UTC-{data['timezone']}")
+                await ctx.send(f"Timezone is set to UTC{data['timezone']}")
         else:
             with open("db/{}.json".format(server_id), "w") as f:
                 data = {"timezone": int(tz)}
