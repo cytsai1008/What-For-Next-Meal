@@ -2,19 +2,19 @@ import json
 
 
 def read_json(filename) -> dict:
-    with open(filename, 'r') as f:
+    with open(filename, "r") as f:
         data = json.load(f)
     return data
 
 
 def write_json(filename, data) -> None:
-    with open(filename, 'w') as f:
+    with open(filename, "w") as f:
         json.dump(data, f)
 
 
 def check_json(filename) -> dict:
     try:
-        with open(filename, 'r') as f:
+        with open(filename, "r") as f:
             data = json.load(f)
     except FileNotFoundError:
         data = {}
@@ -38,7 +38,7 @@ def check_args_one(args) -> bool:
     # return False if args is type(None)
 
 
-def check_dict_data(data:dict) -> bool:
+def check_dict_data(data: dict) -> bool:
     try:
         print(data)
     except KeyError:
@@ -47,17 +47,18 @@ def check_dict_data(data:dict) -> bool:
         return True
 
 
-def get_duplicate_counters(old:int, new:int) -> int:
+def get_duplicate_counters(old: int, new: int) -> int:
     return new - old
 
 
-def check_duplicate_data(existing_data, new_data:list) -> list:
+def check_duplicate_data(existing_data, new_data: list) -> list:
     del_key = []
     for i in range(len(existing_data)):
         for new_datum in new_data:
             if existing_data[i] == new_datum:
                 del_key.append(new_datum)
     return del_key
+
 
 # TODO: time commands function
 # TODO: Merging functions to main.py
