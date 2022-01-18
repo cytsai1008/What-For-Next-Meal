@@ -9,7 +9,7 @@ import asyncio
 
 # git_module = git.cmd.Git(".git")
 async def git_checkout():
-    git_proc = subprocess.check_output(['git', 'pull']).decode('utf-8')
+    git_proc = subprocess.check_output(["git", "pull"]).decode("utf-8")
     if git_proc == "Already up to date.\n":
         print(git_proc)
         return False
@@ -20,19 +20,24 @@ async def git_checkout():
 
 asyncio.run(git_checkout())
 
+
+async def git_checkout_loop():
+    while True:
+        await asyncio.sleep(60)
+        await git_checkout()
+
+
 server_status = bool(False)
+
 
 async def start_server():
     print("Starting server")
-    server_proc = subprocess.Popen(['python3', 'main.py'])
-    server_out = server_proc.communicate()
     server_status = bool(True)
+    server_out = subprocess.check_output(["python", "main.py"]).decode("utf-8")
     print(server_out)
-    return server_proc
 
-asyncio.run(start_server())
-server_proc = start_server()
 
+"""
 while True:
     git_status = asyncio.run(git_checkout())
     print("Attempting to check status.")
@@ -40,11 +45,11 @@ while True:
         print("Update found.")
         if server_status:
             print("Server already running.")
-            server_proc.terminate()
+            asyncio.cancel(start_server())
             server_status = bool(False)
         else:
             print("Server not running.")
-        asyncio.run(start_server())
+        asyncio.loop.call_soon(asyncio.run(start_server()))
         print("Server restarted.")
     else:
         print("No update found.")
@@ -52,6 +57,22 @@ while True:
             print("Server already running.")
         else:
             print("Server not running.")
-            asyncio.run(start_server())
+            asyncio.loop.call_soon(asyncio.run(start_server()))
             print("Server restarted.")
     time.sleep(60)
+"""
+
+
+async def server_update():
+    while git_checkout():
+        asyncio.cancel(start_server())
+        asyncio.run(start_server())
+
+
+
+asyncio.ensure_future(git_checkout_loop())
+asyncio.ensure_future(start_server())
+asyncio.ensure_future(server_update())
+event_loop = asyncio.get_event_loop()
+asyncio.set_event_loop(event_loop)
+event_loop.run_forever()
