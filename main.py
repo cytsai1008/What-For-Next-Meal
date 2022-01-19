@@ -4,6 +4,7 @@ import logging
 import os
 import random
 from datetime import datetime
+import subprocess
 
 import discord
 from discord.ext import commands
@@ -569,5 +570,19 @@ async def time(ctx, *args):
                 data = {}
                 json.dump(data, f, indent=4)
 
+
+@bot.command(Name="update")
+async def update(ctx):
+    sender = ctx.message.author.id
+    with open("token.json", "r") as f:
+        owner = json.load(f)
+    owner = owner["owner"]
+    if sender == owner:
+        await ctx.send("Updating...")
+        git_proc = subprocess.check_output(["git", "pull"]).decode("utf-8")
+        print(git_proc)
+        await ctx.send(git_proc)
+        await bot.close()
+        subprocess.run(["python", "main.py"])
 
 bot.run(token["token"])
