@@ -131,7 +131,7 @@ async def add(ctx, *args):
         server_id = "user_" + str(ctx.message.author.id)
     print(server_id)
     try:
-        if args[0] not in ["breakfast", "lunch", "dinner"]:
+        if args[0] not in ["breakfast", "lunch", "afternoon_tea", "dinner"]:
             await ctx.send(add_zh_tw)
             # print("Error 01")
             # Check args is correct
@@ -210,7 +210,7 @@ async def remove(ctx, *args):
         server_id = "user_" + str(ctx.message.author.id)
     print(server_id)
     try:
-        if args[0] not in ["breakfast", "lunch", "dinner"]:
+        if args[0] not in ["breakfast", "lunch", "afternoon_tea", "dinner"]:
             await ctx.send(remove_zh_tw)
             # print("Error 01")
             # Check args is correct
@@ -278,7 +278,7 @@ async def show(ctx, *args):
         server_id = "user_" + str(ctx.message.author.id)
     print(server_id)
     try:
-        if args[0] not in ["breakfast", "lunch", "dinner"]:
+        if args[0] not in ["breakfast", "lunch", "afternoon_tea", "dinner"]:
             await ctx.send(list_zh_tw)
             # print("Error 01")
             # Check args is correct
@@ -319,15 +319,21 @@ async def show(ctx, *args):
                 except KeyError:
                     lunch = []
                 try:
+                    afternoon_tea = data["afternoon_tea"]
+                except KeyError:
+                    afternoon_tea = []
+                try:
                     dinner = data["dinner"]
                 except KeyError:
                     dinner = []
                 breakfast = ", ".join(breakfast)
                 lunch = ", ".join(lunch)
+                afternoon_tea = ", ".join(afternoon_tea)
                 dinner = ", ".join(dinner)
                 await ctx.send(
                     f"breakfast list: {breakfast}\n"
                     f"lunch list: {lunch}\n"
+                    f"afternoon tea list: {afternoon_tea}\n"
                     f"dinner list: {dinner}"
                 )
         else:
@@ -345,7 +351,7 @@ async def lists(ctx, *args):
         server_id = "user_" + str(ctx.message.author.id)
     print(server_id)
     try:
-        if args[0] not in ["breakfast", "lunch", "dinner"]:
+        if args[0] not in ["breakfast", "lunch", "afternoon_tea", "dinner"]:
             await ctx.send(list_zh_tw)
             # print("Error 01")
             # Check args is correct
@@ -386,6 +392,10 @@ async def lists(ctx, *args):
                 except KeyError:
                     lunch = []
                 try:
+                    afternoon_tea = data["afternoon_tea"]
+                except KeyError:
+                    afternoon_tea = []
+                try:
                     dinner = data["dinner"]
                 except KeyError:
                     dinner = []
@@ -395,6 +405,7 @@ async def lists(ctx, *args):
                 await ctx.send(
                     f"breakfast list: {breakfast}\n"
                     f"lunch list: {lunch}\n"
+                    f"afternoon tea list: {afternoon_tea}\n"
                     f"dinner list: {dinner}"
                 )
         else:
@@ -412,7 +423,7 @@ async def choose(ctx, *args):
         server_id = "user_" + str(ctx.message.author.id)
     print(server_id)
     try:
-        if args[0] not in ["breakfast", "lunch", "dinner"]:
+        if args[0] not in ["breakfast", "lunch", "afternoon_tea", "dinner"]:
             await ctx.send(random_zh_tw)
             # print("Error 01")
             # Check args is correct
@@ -474,7 +485,13 @@ async def choose(ctx, *args):
                             random_food = random.choice(data["lunch"])
                             await ctx.send(f"Random food in lunch: {random_food}")
                     elif current_time in range(15, 17):
-                        await ctx.send("Current not support afternoon tea.")
+                        if len(data["afternoon_tea"]) == 0:
+                            await ctx.send("No food in afternoon tea")
+                        else:
+                            random.seed(str(datetime.now()))
+                            # print(datetime.now())
+                            random_food = random.choice(data["afternoon_tea"])
+                            await ctx.send(f"Random food in afternoon tea: {random_food}")
                     elif current_time in range(17, 23):
                         if len(data["dinner"]) == 0:
                             await ctx.send("No food in dinner")
@@ -495,7 +512,7 @@ async def choose(ctx, *args):
                     elif current_time in range(10, 15):
                         await ctx.send("No food in lunch")
                     elif current_time in range(14, 17):
-                        await ctx.send("Current not support afternoon tea.")
+                        await ctx.send("No food in afternoon tea")
                     elif current_time in range(17, 23):
                         await ctx.send("No food in dinner")
                     elif current_time in range(23, 24) or current_time in range(5):
