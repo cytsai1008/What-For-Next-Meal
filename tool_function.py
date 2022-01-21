@@ -11,7 +11,7 @@ def read_json(filename) -> dict:
 
 def write_json(filename, data) -> None:
     with open(filename, "w") as f:
-        json.dump(data, f)
+        json.dump(data, f, indent=4)
 
 
 def check_json(filename) -> dict:
