@@ -26,7 +26,7 @@ handler.setFormatter(
 )
 logger.addHandler(handler)
 
-if not os.path.exists("token.json"):
+if not tool_function.check_file("token.json"):
     print(
         "No token detected\n"
         "please input your token from https://discord.com/developers/applications:"
@@ -36,11 +36,10 @@ if not os.path.exists("token.json"):
     user_id = input()
     print("Please input your bot prefix:")
     prefix = input()
-    with open("token.json", "w") as f:
-        token_dump = {"token": token_json, "owner": user_id, "prefix": prefix}
-        json.dump(token_dump, f, indent=4)
-with open("token.json", "r") as f:
-    token = json.load(f)
+    token_dump = {"token": token_json, "owner": user_id, "prefix": prefix}
+    tool_function.write_json("token.json", token_dump)
+    del token_json, user_id, prefix, token_dump
+token = tool_function.read_json("token.json")
 
 bot = commands.Bot(command_prefix=token["prefix"], help_command=None)
 
@@ -49,6 +48,8 @@ add_zh_tw = load_command.read_description("add", "zh-tw")
 remove_zh_tw = load_command.read_description("remove", "zh-tw")
 list_zh_tw = load_command.read_description("list", "zh-tw")
 random_zh_tw = load_command.read_description("random", "zh-tw")
+
+support_meal = ["breakfast", "lunch", "afternoon_tea", "dinner"]
 
 bot.remove_command("help")
 
@@ -125,63 +126,51 @@ async def sl(ctx):
 @bot.command(Name="add")
 async def add(ctx, *args):
     meal_list = list(args)
-    try:
-        server_id = str(ctx.message.guild.id)
-    except:
-        server_id = "user_" + str(ctx.message.author.id)
+    server_id = tool_function.id_check(ctx.message)
     print(server_id)
     try:
-        if args[0] not in ["breakfast", "lunch", "afternoon_tea", "dinner"]:
+        if tool_function.check_args_zero(args[0], support_meal):
             await ctx.send(add_zh_tw)
             # print("Error 01")
             # Check args is correct
-        elif args[1] is type(None):
+        elif not tool_function.check_args_one(args[1]):
             await ctx.send(add_zh_tw)
             # print("Error 02")
             # Check add data exists
-        elif os.path.exists("db/{}.json".format(server_id)):
+        elif tool_function.check_file("db/{}.json".format(server_id)):
             # Check json exists
-            with open("db/{}.json".format(server_id), "r") as f:
-                data = json.load(f)
-                del meal_list[0]
-                # del args[0] from meal_list
-                before_del = len(meal_list)
-                try:
-                    print(f"data in {args[0]} is {data[args[0]]}")
-                except KeyError:
-                    data[args[0]] = []
+            data = tool_function.read_json("db/{}.json".format(server_id))
+            del meal_list[0]
+            # del args[0] from meal_list
+            before_del = len(meal_list)
+            if not tool_function.check_dict_data(data, args[0]):
+                data[args[0]] = []
                 # Check Key exists
-                # print(f"data is {data}")
-                del_list = []
-                for i in range(len(data[args[0]])):
-                    # print(f"i is {i}")
-                    for j in range(len(meal_list)):
-                        # print(f"j is {j}")
-                        if data[args[0]][i] == meal_list[j]:
-                            del_list.append(meal_list[j])
-                # Add duplicate to del_list to delete
-                # print(del_list)
-                for k in range(len(del_list)):
-                    meal_list.remove(del_list[k])
+            del_list = []
+            del_list = tool_function.check_duplicate_data(data[args[0]], meal_list)
+            # Add duplicate to del_list to delete
+            # print(del_list)
+            for k in range(len(del_list)):
+                meal_list.remove(del_list[k])
                 # Cleanup duplicate meal_list
-                for meal in meal_list:
-                    data[args[0]].append(meal)
+            for meal in meal_list:
+                data[args[0]].append(meal)
                 # Append meal_list to data
-                after_del = len(meal_list)
-                print(args[0])
-                print(meal_list)
-                print(data)
-                duplicate_len = before_del - after_del
-                json.dump(data, open("db/{}.json".format(server_id), "w"), indent=4)
-                # Save data to json
+            after_del = len(meal_list)
+            print(args[0])
+            print(meal_list)
+            print(data)
+            duplicate_len = before_del - after_del
+            tool_function.write_json("db/{}.json".format(server_id), data)
+            # Save data to json
         else:
-            with open("db/{}.json".format(server_id), "w") as f:
-                del meal_list[0]
-                add_meal = {args[0]: meal_list}
-                json.dump(add_meal, f, indent=4)
-                # Add new json to db
-                # print("Warning 01")
-        if len(meal_list) == 0:
+            del meal_list[0]
+            add_meal = {args[0]: meal_list}
+            tool_function.write_json("db/{}.json".format(server_id), add_meal)
+            duplicate_len = 0
+            # Add new json to db
+            # print("Warning 01")
+        if not meal_list:
             await ctx.send(f"0 food added to {args[0]}")
         elif len(meal_list) >= 2:
             await ctx.send(
@@ -204,13 +193,10 @@ async def add(ctx, *args):
 @bot.command(Name="remove")
 async def remove(ctx, *args):
     del_list = list(args)
-    try:
-        server_id = str(ctx.message.guild.id)
-    except:
-        server_id = "user_" + str(ctx.message.author.id)
+    server_id = tool_function.id_check(ctx.message)
     print(server_id)
     try:
-        if args[0] not in ["breakfast", "lunch", "afternoon_tea", "dinner"]:
+        if tool_function.check_args_zero(args[0], support_meal):
             await ctx.send(remove_zh_tw)
             # print("Error 01")
             # Check args is correct
@@ -401,6 +387,7 @@ async def lists(ctx, *args):
                     dinner = []
                 breakfast = ", ".join(breakfast)
                 lunch = ", ".join(lunch)
+                afternoon_tea = ", ".join(afternoon_tea)
                 dinner = ", ".join(dinner)
                 await ctx.send(
                     f"breakfast list: {breakfast}\n"
