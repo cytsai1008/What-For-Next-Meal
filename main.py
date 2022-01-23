@@ -544,8 +544,7 @@ async def choose(ctx, *args):
 @bot.command(Name="shutdown")
 async def shutdown(ctx):
     sender = ctx.message.author.id
-    with open("token.json", "r") as f:
-        owner = json.load(f)
+    owner = tool_function.read_json("token.json")
     owner = owner["owner"]
     if sender == owner:
         await ctx.send("Shutting down...")
