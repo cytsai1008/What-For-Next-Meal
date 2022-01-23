@@ -168,6 +168,21 @@ async def add(ctx, *args):
             print(meal_list)
             print(data)
             duplicate_len = before_del - after_del
+            if not meal_list:
+                await ctx.send(f"0 food added to {args[0]}")
+            elif len(meal_list) >= 2:
+                await ctx.send(
+                    "{} foods add into {} ({} duplicate)".format(
+                        len(meal_list), args[0], duplicate_len
+                    )
+                )
+            elif len(meal_list) == 1:
+                await ctx.send(
+                    "{} food add into {} ({} duplicate)".format(
+                        len(meal_list), args[0], duplicate_len
+                    )
+                )
+
             tool_function.write_json("db/{}.json".format(server_id), data)
             # Save data to json
         else:
@@ -175,6 +190,18 @@ async def add(ctx, *args):
             add_meal = {args[0]: meal_list}
             tool_function.write_json("db/{}.json".format(server_id), add_meal)
             duplicate_len = 0
+            if len(meal_list) >= 2:
+                await ctx.send(
+                    "{} foods add into {} ({} duplicate)".format(
+                        len(meal_list), args[0], duplicate_len
+                    )
+                )
+            else:
+                await ctx.send(
+                    "{} food add into {} ({} duplicate)".format(
+                        len(meal_list), args[0], duplicate_len
+                    )
+                )
             # Add new json to db
             # print("Warning 01")
         if not meal_list:
@@ -230,6 +257,20 @@ async def remove(ctx, *args):
                 # Remove del_list to data
             after_del = len(del_key)
             wrong_data = before_del - after_del
+            if not del_key:
+                await ctx.send(f"0 food deleted from {args[0]}")
+            elif len(del_key) >= 2:
+                await ctx.send(
+                    "{} foods deleted from {} ({} not found)".format(
+                        len(del_key), args[0], wrong_data
+                    )
+                )
+            elif len(del_key) == 1:
+                await ctx.send(
+                    "{} food deleted from {} ({} duplicate)".format(
+                        len(del_key), args[0], wrong_data
+                    )
+                )
             tool_function.write_json("db/{}.json".format(server_id), data)
             # Save data to json
         else:
@@ -239,21 +280,6 @@ async def remove(ctx, *args):
             # print("Warning 01")
     except IndexError:
         await ctx.send(remove_zh_tw)
-        # print("Error 03")
-    if len(del_key) == 0:
-        await ctx.send(f"0 food deleted from {args[0]}")
-    elif len(del_key) >= 2:
-        await ctx.send(
-            "{} foods deleted from {} ({} not found)".format(
-                len(del_key), args[0], wrong_data
-            )
-        )
-    elif len(del_key) == 1:
-        await ctx.send(
-            "{} food deleted from {} ({} duplicate)".format(
-                len(del_key), args[0], wrong_data
-            )
-        )
 
 
 @bot.command(Name="show")
