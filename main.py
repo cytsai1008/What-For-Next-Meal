@@ -204,20 +204,7 @@ async def add(ctx, *args):
                 )
             # Add new json to db
             # print("Warning 01")
-        if not meal_list:
-            await ctx.send(f"0 food added to {args[0]}")
-        elif len(meal_list) >= 2:
-            await ctx.send(
-                "{} foods add into {} ({} duplicate)".format(
-                    len(meal_list), args[0], duplicate_len
-                )
-            )
-        elif len(meal_list) == 1:
-            await ctx.send(
-                "{} food add into {} ({} duplicate)".format(
-                    len(meal_list), args[0], duplicate_len
-                )
-            )
+
     except IndexError:
         await ctx.send(add_zh_tw)
         # print("Error 03")
@@ -247,15 +234,18 @@ async def remove(ctx, *args):
             if not tool_function.check_dict_data(data, args[0]):
                 data[args[0]] = []
                 # Check Key exists
-            del_key = []
             # print(f"data is {data}")
-            del_key = tool_function.check_duplicate_data(data[args[0]], del_list)
+            try:
+                del_key = tool_function.check_duplicate_data(data[args[0]], del_list)
+            except:
+                del_key = []
             # Cleanup duplicate meal_list
             print(f"del_list is {del_list}")
-            for k in range(len(del_key)):
-                data[args[0]].remove(del_key[k])
+            for item in del_key:
+                data[args[0]].remove(item)
                 # Remove del_list to data
             after_del = len(del_key)
+
             wrong_data = before_del - after_del
             if not del_key:
                 await ctx.send(f"0 food deleted from {args[0]}")
@@ -316,7 +306,7 @@ async def show(ctx, *args):
             if len(data) == 0:
                 await ctx.send("No food in any list")
             else:
-                # TODO: Need to rewrite to for loop somedays
+                # TODO: Need to rewrite to for loop someday
                 """
                 for i in support_meal:
                     try:
@@ -390,7 +380,7 @@ async def lists(ctx, *args):
             if len(data) == 0:
                 await ctx.send("No food in any list")
             else:
-                # TODO: Need to rewrite to for loop somedays
+                # TODO: Need to rewrite to for loop someday
                 """
                 for i in support_meal:
                     try:
@@ -443,18 +433,15 @@ async def choose(ctx, *args):
             # Check json exists
             data = tool_function.read_json("db/{}.json".format(server_id))
             # Load json to data
-            try:
-                print(data[args[0]])
-            except KeyError:
+            if not tool_function.check_dict_data(data, args[0]):
+                await ctx.send(f"No food in {args[0]}")
+            elif len(data[args[0]]) == 0:
                 await ctx.send(f"No food in {args[0]}")
             else:
-                if len(data[args[0]]) == 0:
-                    await ctx.send(f"No food in {args[0]}")
-                else:
-                    random.seed(str(datetime.now()))
-                    # print(datetime.now())
-                    random_food = random.choice(data[args[0]])
-                    await ctx.send(f"Random food in {args[0]}: {random_food}")
+                random.seed(str(datetime.now()))
+                # print(datetime.now())
+                random_food = random.choice(data[args[0]])
+                await ctx.send(f"Random food in {args[0]}: {random_food}")
         else:
             tool_function.write_json("db/{}.json".format(server_id), {})
             await ctx.send(f"No food in {args[0]}")
@@ -549,10 +536,7 @@ async def shutdown(ctx):
 
 @bot.command(Name="time")
 async def time(ctx, *args):
-    try:
-        server_id = ctx.message.guild.id
-    except:
-        server_id = "user_" + str(ctx.message.author.id)
+    server_id = tool_function.id_check(ctx.message)
     try:
         tz = int(args[0])
         if tz != int(args[0]):
@@ -561,21 +545,18 @@ async def time(ctx, *args):
             await ctx.send("Too many entry.")
         elif tz < -12 or tz > 12:
             await ctx.send("Please input a number between -12 and 12.")
-        elif os.path.exists("db/{}.json".format(server_id)):
-            with open("db/{}.json".format(server_id), "r") as f:
-                data = json.load(f)
+        elif tool_function.check_file("db/{}.json".format(server_id)):
+            data = tool_function.read_json("db/{}.json".format(server_id))
             data["timezone"] = int(tz)
             # print(data['timezone'])
-            with open("db/{}.json".format(server_id), "w") as f:
-                json.dump(data, f, indent=4)
+            tool_function.write_json("db/{}.json".format(server_id), data)
             if data["timezone"] >= 0:
                 await ctx.send(f"Timezone is set to UTC+{data['timezone']}")
             else:
                 await ctx.send(f"Timezone is set to UTC{data['timezone']}")
         else:
-            with open("db/{}.json".format(server_id), "w") as f:
-                data = {"timezone": int(tz)}
-                json.dump(data, f, indent=4)
+            data = {"timezone": int(tz)}
+            tool_function.write_json("db/{}.json".format(server_id), data)
             if data["timezone"] >= 0:
                 await ctx.send(f"Timezone set to UTC+{data['timezone']}")
             else:
