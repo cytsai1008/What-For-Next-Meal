@@ -136,7 +136,7 @@ async def add(ctx, *args):
     server_id = tool_function.id_check(ctx.message)
     print(server_id)
     try:
-        if tool_function.check_args_zero(args[0], support_meal):
+        if not tool_function.check_args_zero(args[0], support_meal):
             await ctx.send(add_zh_tw)
             # print("Error 01")
             # Check args is correct
