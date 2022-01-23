@@ -1,5 +1,7 @@
 import json
 import os
+
+
 # import load_command
 
 
@@ -24,8 +26,8 @@ def check_json(filename) -> dict:
 
 
 def check_args_zero(args, arg_list) -> bool:
-    return all(arg in args for arg in arg_list)
-    # return true if args not in arg_list
+    return args in arg_list
+
 
 def id_check(self) -> str:
     try:
