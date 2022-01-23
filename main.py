@@ -248,7 +248,7 @@ async def remove(ctx, *args):
 
             wrong_data = before_del - after_del
             if not del_key:
-                await ctx.send(f"0 food deleted from {args[0]}")
+                await ctx.send(f"0 food deleted from {args[0]} ({wrong_data} not found)")
             elif len(del_key) >= 2:
                 await ctx.send(
                     "{} foods deleted from {} ({} not found)".format(
@@ -257,7 +257,7 @@ async def remove(ctx, *args):
                 )
             elif len(del_key) == 1:
                 await ctx.send(
-                    "{} food deleted from {} ({} duplicate)".format(
+                    "{} food deleted from {} ({} not found)".format(
                         len(del_key), args[0], wrong_data
                     )
                 )
