@@ -69,6 +69,22 @@ async def on_ready():
     game = discord.Game("nm!help")
     # discord.Status.<狀態>，可以是online,offline,idle,dnd,invisible
     await bot.change_presence(status=discord.Status.online, activity=game)
+    owner = await bot.fetch_user(token["owner"])
+    await owner.send("bot bootup.")
+
+
+@bot.event
+async def on_guild_join(guild):
+    general = guild.system_channel
+    if general and general.permissions_for(guild.me).send_messages:
+        await general.send(
+            "Thanks for adding me into your server!\n"
+            f"Please use `{token['prefix']}help` for more information.\n"
+            f"`{token['prefix']}time <hours from London>` to setup the timezone.\n"
+            "感謝您邀請我進入伺服器\n"
+            f"請使用 `{token['prefix']}help` 取得更多資訊\n"
+            f"並透過 `{token['prefix']}time <與倫敦相差小時數>` 設定時區"
+        )
 
 
 """
@@ -248,7 +264,9 @@ async def remove(ctx, *args):
 
             wrong_data = before_del - after_del
             if not del_key:
-                await ctx.send(f"0 food deleted from {args[0]} ({wrong_data} not found)")
+                await ctx.send(
+                    f"0 food deleted from {args[0]} ({wrong_data} not found)"
+                )
             elif len(del_key) >= 2:
                 await ctx.send(
                     "{} foods deleted from {} ({} not found)".format(
