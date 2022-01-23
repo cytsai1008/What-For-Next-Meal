@@ -580,29 +580,22 @@ async def time(ctx, *args):
             else:
                 await ctx.send(f"Timezone set to UTC{data['timezone']}")
     except IndexError:
-        if os.path.exists("db/{}.json".format(server_id)):
-            with open("db/{}.json".format(server_id), "r") as f:
-                data = json.load(f)
-            try:
-                print(data["timezone"])
-            except KeyError:
+        if tool_function.check_file("db/{}.json".format(server_id)):
+            data = tool_function.read_json("db/{}.json".format(server_id))
+            if not tool_function.check_dict_data(data, "timezone"):
                 await ctx.send("No timezone set, please input number to set.")
+            elif data["timezone"] >= 0:
+                await ctx.send(f"Timezone is set to UTC+{data['timezone']}")
             else:
-                if data["timezone"] >= 0:
-                    await ctx.send(f"Timezone is set to UTC+{data['timezone']}")
-                else:
-                    await ctx.send(f"Timezone is set to UTC{data['timezone']}")
+                await ctx.send(f"Timezone is set to UTC{data['timezone']}")
         else:
-            with open("db/{}.json".format(server_id), "w") as f:
-                data = {}
-                json.dump(data, f, indent=4)
+            tool_function.write_json("db/{}.json".format(server_id), {})
 
 
 @bot.command(Name="update")
 async def update(ctx):
     sender = ctx.message.author.id
-    with open("token.json", "r") as f:
-        owner = json.load(f)
+    owner = tool_function.read_json("token.json")
     owner = owner["owner"]
     if sender == owner:
         await ctx.send("Updating...")

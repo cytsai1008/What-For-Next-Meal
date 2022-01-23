@@ -15,7 +15,7 @@ def write_json(filename, data) -> None:
     with open(filename, "w") as f:
         json.dump(data, f, indent=4)
 
-
+"""
 def check_json(filename) -> dict:
     try:
         with open(filename, "r") as f:
@@ -23,7 +23,7 @@ def check_json(filename) -> dict:
     except FileNotFoundError:
         data = {}
     return data
-
+"""
 
 def check_args_zero(args, arg_list) -> bool:
     return args in arg_list
