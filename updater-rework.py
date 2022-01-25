@@ -44,4 +44,3 @@ while True:
             print("Server restarting...")
     git_checkout_thread.terminate()
     time.sleep(10)
-

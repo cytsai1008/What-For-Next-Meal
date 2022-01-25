@@ -69,7 +69,6 @@ async def server_update():
         asyncio.run(start_server())
 
 
-
 asyncio.ensure_future(git_checkout_loop())
 asyncio.ensure_future(start_server())
 asyncio.ensure_future(server_update())
