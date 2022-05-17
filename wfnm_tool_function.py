@@ -1,30 +1,37 @@
 import json
 import os
+import redis
 
 
 # import load_command
 
 
+def redis_client() -> redis.Redis:
+    """Returns redis client"""
+    return redis.Redis(
+        host=os.environ["REDIS_WFNM_URL"],
+        port=16704,
+        username=os.environ["REDIS_USER"],
+        password=os.environ["REDIS_WFNM_PASSWD"],
+        decode_responses=True,
+    )
+
+
 def read_json(filename) -> dict:
+    client = redis_client()
+    return client.json().get(filename)
+
+
+def new_read_json(filename) -> dict:
     with open(filename, "r") as f:
         data = json.load(f)
     return data
 
 
 def write_json(filename, data) -> None:
-    with open(filename, "w") as f:
-        json.dump(data, f, indent=4)
-
-
-"""
-def check_json(filename) -> dict:
-    try:
-        with open(filename, "r") as f:
-            data = json.load(f)
-    except FileNotFoundError:
-        data = {}
-    return data
-"""
+    """Writes dictionary to redis json (key: filename, value: data)"""
+    redis_client().json().set(filename, ".", data)
+    # return False if args is type(None)
 
 
 def check_args_zero(args, arg_list) -> bool:
@@ -35,7 +42,7 @@ def id_check(self) -> str:
     try:
         server_id = str(self.guild.id)
     except:
-        server_id = "user_" + str(self.author.id)
+        server_id = f"user_{str(self.author.id)}"
     return server_id
 
 
@@ -64,7 +71,8 @@ def check_duplicate_data(existing_data, new_data: list) -> list:
 
 
 def check_file(filename) -> bool:
-    return bool(os.path.exists(filename))
+    """Check if filename exist in redis key"""
+    return bool(redis_client().exists(filename))
 
 
 """
@@ -78,4 +86,4 @@ def lang_command(lang: str, command: str) -> str:
 """
 
 # TODO: time commands function
-# TODO: Merging functions to main.py
+# TODO: Merging functions to wfnm_main.py

@@ -32,8 +32,8 @@ server_status = bool(False)
 
 async def start_server():
     print("Starting server")
-    server_status = bool(True)
-    server_out = subprocess.check_output(["python", "main.py"]).decode("utf-8")
+    server_status = True
+    server_out = subprocess.check_output(["python", "wfnm_main.py"]).decode("utf-8")
     print(server_out)
 
 
