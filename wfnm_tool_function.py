@@ -86,4 +86,4 @@ def lang_command(lang: str, command: str) -> str:
 """
 
 # TODO: time commands function
-# TODO: Merging functions to main.py
+# TODO: Merging functions to wfnm_main.py

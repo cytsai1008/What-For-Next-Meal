@@ -15,7 +15,7 @@ def git_checkout():
 
 def start_server():
     print("Server starting...")
-    server_proc = subprocess.check_output(["python", "main.py"]).decode("utf-8")
+    server_proc = subprocess.check_output(["python", "wfnm_main.py"]).decode("utf-8")
     print(server_proc)
 
 

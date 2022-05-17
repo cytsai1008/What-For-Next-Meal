@@ -1,7 +1,8 @@
 import logging
 import os
 import random
-import subprocess
+import signal
+# import subprocess
 from datetime import datetime
 import dotenv
 
@@ -522,11 +523,12 @@ async def choose(ctx, *args):  # sourcery no-metrics
 
 @bot.command(Name="shutdown")
 async def shutdown(ctx):
-    sender = ctx.message.author.id
-    owner = token["owner"]
+    sender = int(ctx.message.author.id)
+    owner = int(token["owner"])
     if sender == owner:
-        await ctx.send("Shutting down...")
-        await bot.close()
+        await ctx.reply("Shutting down...")
+        # send SIGTERM to the bot process
+        os.kill(os.getpid(), signal.SIGTERM)
 
 
 @bot.command(Name="time")
@@ -569,6 +571,7 @@ async def time(ctx, *args):
             tool_function.write_json(f"{server_id}", {})
 
 
+"""
 @bot.command(Name="update")
 async def update(ctx):
     sender = ctx.message.author.id
@@ -579,7 +582,17 @@ async def update(ctx):
         print(git_proc)
         await ctx.send(git_proc)
         await bot.close()
-        subprocess.run(["python", "main.py"])
+        subprocess.run(["python", "wfnm_main.py"])
+"""
+
+
+@bot.command(Name="reboot")
+async def reboot(ctx):
+    sender = int(ctx.message.author.id)
+    owner = int(token["owner"])
+    if sender == owner:
+        await ctx.reply("Rebooting...")
+        await bot.close()
 
 
 bot.run(token["token"])
