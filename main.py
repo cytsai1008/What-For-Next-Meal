@@ -1,10 +1,9 @@
-# import asyncio
-# import json
 import logging
 import os
 import random
 import subprocess
 from datetime import datetime
+import dotenv
 
 import discord
 from discord.ext import commands
@@ -18,30 +17,21 @@ logger = logging.getLogger("discord")
 logger.setLevel(logging.DEBUG)
 if not os.path.exists("Log"):
     os.mkdir("Log")
-if not os.path.exists("db"):
-    os.mkdir("db")
 handler = logging.FileHandler(filename="Log/discord.log", encoding="utf-8", mode="w")
 handler.setFormatter(
     logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s")
 )
 logger.addHandler(handler)
 
-if not tool_function.check_file("token.json"):
-    print(
-        "No token detected\n"
-        "please input your token from https://discord.com/developers/applications:"
-    )
-    token_json = input()
-    print("Please input your user id:")
-    user_id = input()
-    print("Please input your bot prefix:")
-    prefix = input()
-    token_dump = {"token": token_json, "owner": user_id, "prefix": prefix}
-    tool_function.write_json("token.json", token_dump)
-    del token_json, user_id, prefix, token_dump
-token = tool_function.read_json("token.json")
+dotenv.load_dotenv()
 
-bot = commands.Bot(command_prefix=token["prefix"], help_command=None)
+token = {
+    "token": os.getenv("DISCORD_WFNM_TOKEN"),
+    "owner": int(os.getenv("DISCORD_OWNER")),
+    "prefix": os.getenv("DISCORD_WFNM_PREFIX"),
+}
+
+bot = commands.Bot(command_prefix=token["prefix"], help_command=None, case_insensitive=True)
 
 help_zh_tw = load_command.read_description("help", "zh-tw")
 add_zh_tw = load_command.read_description("add", "zh-tw")
@@ -160,9 +150,9 @@ async def add(ctx, *args):
             await ctx.send(add_zh_tw)
             # print("Error 02")
             # Check add data exists
-        elif tool_function.check_file(f"db/{server_id}.json"):
+        elif tool_function.check_file(f"{server_id}"):
             # Check json exists
-            data = tool_function.read_json(f"db/{server_id}.json")
+            data = tool_function.read_json(f"{server_id}")
             del meal_list[0]
             # del args[0] from meal_list
             before_del = len(meal_list)
@@ -196,12 +186,12 @@ async def add(ctx, *args):
                     f"{len(meal_list)} food add into {args[0]} ({duplicate_len} duplicate)"
                 )
 
-            tool_function.write_json(f"db/{server_id}.json", data)
+            tool_function.write_json(f"{server_id}", data)
             # Save data to json
         else:
             del meal_list[0]
             add_meal = {args[0]: meal_list}
-            tool_function.write_json(f"db/{server_id}.json", add_meal)
+            tool_function.write_json(f"{server_id}", add_meal)
             duplicate_len = 0
             if len(meal_list) >= 2:
                 await ctx.send(
@@ -236,9 +226,9 @@ async def remove(ctx, *args):
             await ctx.send(remove_zh_tw)
             # print("Error 02")
             # Check remove data exists
-        elif tool_function.check_file(f"db/{server_id}.json"):
+        elif tool_function.check_file(f"{server_id}"):
             # Check json exists
-            data = tool_function.read_json(f"db/{server_id}.json")
+            data = tool_function.read_json(f"{server_id}")
             del del_list[0]
             # del args[0] from del_list
             before_del = len(del_list)
@@ -268,10 +258,10 @@ async def remove(ctx, *args):
             elif len(del_key) == 1:
                 await ctx.send(f"{len(del_key)} food deleted from {args[0]} ({wrong_data} not found)")
 
-            tool_function.write_json(f"db/{server_id}.json", data)
+            tool_function.write_json(f"{server_id}", data)
             # Save data to json
         else:
-            tool_function.write_json(f"db/{server_id}.json", {})
+            tool_function.write_json(f"{server_id}", {})
             # Add new json to db
             await ctx.send(f"No food in {args[0]}")
             # print("Warning 01")
@@ -288,9 +278,9 @@ async def show(ctx, *args):  # sourcery no-metrics
             await ctx.send(list_zh_tw)
             # print("Error 01")
             # Check args is correct
-        elif tool_function.check_file(f"db/{server_id}.json"):
+        elif tool_function.check_file(f"{server_id}"):
             # Check json exists
-            data = tool_function.read_json(f"db/{server_id}.json")
+            data = tool_function.read_json(f"{server_id}")
             # Load json to data
             try:
                 print(data[args[0]])
@@ -303,12 +293,12 @@ async def show(ctx, *args):  # sourcery no-metrics
                     str_data = ", ".join(data[args[0]])
                     await ctx.send(f"{args[0]} list: {str_data}")
         else:
-            tool_function.write_json(f"db/{server_id}.json", {})
+            tool_function.write_json(f"{server_id}", {})
             await ctx.send(f"No food in {args[0]}")
             # print("Warning 01")
     except IndexError:
-        if tool_function.check_file(f"db/{server_id}.json"):
-            data = tool_function.read_json(f"db/{server_id}.json")
+        if tool_function.check_file(f"{server_id}"):
+            data = tool_function.read_json(f"{server_id}")
             # Load json to data
             if len(data) == 0:
                 await ctx.send("No food in any list")
@@ -348,7 +338,7 @@ async def show(ctx, *args):  # sourcery no-metrics
                     f"dinner list: {dinner}"
                 )
         else:
-            tool_function.write_json(f"db/{server_id}.json", {})
+            tool_function.write_json(f"{server_id}", {})
             await ctx.send("No food in any list")
         # print("Error 03")
 
@@ -362,9 +352,9 @@ async def lists(ctx, *args):  # sourcery no-metrics
             await ctx.send(list_zh_tw)
             # print("Error 01")
             # Check args is correct
-        elif tool_function.check_file(f"db/{server_id}.json"):
+        elif tool_function.check_file(f"{server_id}"):
             # Check json exists
-            data = tool_function.read_json(f"db/{server_id}.json")
+            data = tool_function.read_json(f"{server_id}")
             # Load json to data
             try:
                 print(data[args[0]])
@@ -377,12 +367,12 @@ async def lists(ctx, *args):  # sourcery no-metrics
                     str_data = ", ".join(data[args[0]])
                     await ctx.send(f"{args[0]} list: {str_data}")
         else:
-            tool_function.write_json(f"db/{server_id}.json", {})
+            tool_function.write_json(f"{server_id}", {})
             await ctx.send(f"No food in {args[0]}")
             # print("Warning 01")
     except IndexError:
-        if tool_function.check_file(f"db/{server_id}.json"):
-            data = tool_function.read_json(f"db/{server_id}.json")
+        if tool_function.check_file(f"{server_id}"):
+            data = tool_function.read_json(f"{server_id}")
             # Load json to data
             if len(data) == 0:
                 await ctx.send("No food in any list")
@@ -422,7 +412,7 @@ async def lists(ctx, *args):  # sourcery no-metrics
                     f"dinner list: {dinner}"
                 )
         else:
-            tool_function.write_json(f"db/{server_id}.json", {})
+            tool_function.write_json(f"{server_id}", {})
             await ctx.send("No food in any list")
         # print("Error 03")
 
@@ -436,9 +426,9 @@ async def choose(ctx, *args):  # sourcery no-metrics
             await ctx.send(list_zh_tw)
             # print("Error 01")
             # Check args is correct
-        elif tool_function.check_file(f"db/{server_id}.json"):
+        elif tool_function.check_file(f"{server_id}"):
             # Check json exists
-            data = tool_function.read_json(f"db/{server_id}.json")
+            data = tool_function.read_json(f"{server_id}")
             # Load json to data
             if not tool_function.check_dict_data(data, args[0]):
                 await ctx.send(f"No food in {args[0]}")
@@ -450,16 +440,16 @@ async def choose(ctx, *args):  # sourcery no-metrics
                 random_food = random.choice(data[args[0]])
                 await ctx.send(f"Random food in {args[0]}: {random_food}")
         else:
-            tool_function.write_json(f"db/{server_id}.json", {})
+            tool_function.write_json(f"{server_id}", {})
             await ctx.send(f"No food in {args[0]}")
             # print("Warning 01")
     except IndexError:
         current_utc = datetime.utcnow()
         current_utc = current_utc.hour
-        if os.path.exists(f"db/{server_id}.json"):
+        if os.path.exists(f"{server_id}"):
 
             try:
-                data = tool_function.read_json(f"db/{server_id}.json")
+                data = tool_function.read_json(f"{server_id}")
                 print(data["timezone"])
                 # Load json to data
             except KeyError:
@@ -533,8 +523,7 @@ async def choose(ctx, *args):  # sourcery no-metrics
 @bot.command(Name="shutdown")
 async def shutdown(ctx):
     sender = ctx.message.author.id
-    owner = tool_function.read_json("token.json")
-    owner = owner["owner"]
+    owner = token["owner"]
     if sender == owner:
         await ctx.send("Shutting down...")
         await bot.close()
@@ -551,25 +540,25 @@ async def time(ctx, *args):
             await ctx.send("Too many entry.")
         elif tz < -12 or tz > 12:
             await ctx.send("Please input a number between -12 and 12.")
-        elif tool_function.check_file("db/{}.json".format(server_id)):
-            data = tool_function.read_json("db/{}.json".format(server_id))
-            data["timezone"] = int(tz)
+        elif tool_function.check_file(f"{server_id}"):
+            data = tool_function.read_json(f"{server_id}")
+            data["timezone"] = tz
             # print(data['timezone'])
-            tool_function.write_json("db/{}.json".format(server_id), data)
+            tool_function.write_json(f"{server_id}", data)
             if data["timezone"] >= 0:
                 await ctx.send(f"Timezone is set to UTC+{data['timezone']}")
             else:
                 await ctx.send(f"Timezone is set to UTC{data['timezone']}")
         else:
-            data = {"timezone": int(tz)}
-            tool_function.write_json("db/{}.json".format(server_id), data)
+            data = {"timezone": tz}
+            tool_function.write_json(f"{server_id}", data)
             if data["timezone"] >= 0:
                 await ctx.send(f"Timezone set to UTC+{data['timezone']}")
             else:
                 await ctx.send(f"Timezone set to UTC{data['timezone']}")
     except IndexError:
-        if tool_function.check_file("db/{}.json".format(server_id)):
-            data = tool_function.read_json("db/{}.json".format(server_id))
+        if tool_function.check_file(f"{server_id}"):
+            data = tool_function.read_json(f"{server_id}")
             if not tool_function.check_dict_data(data, "timezone"):
                 await ctx.send("No timezone set, please input number to set.")
             elif data["timezone"] >= 0:
@@ -577,14 +566,13 @@ async def time(ctx, *args):
             else:
                 await ctx.send(f"Timezone is set to UTC{data['timezone']}")
         else:
-            tool_function.write_json("db/{}.json".format(server_id), {})
+            tool_function.write_json(f"{server_id}", {})
 
 
 @bot.command(Name="update")
 async def update(ctx):
     sender = ctx.message.author.id
-    owner = tool_function.read_json("token.json")
-    owner = owner["owner"]
+    owner = token["owner"]
     if sender == owner:
         await ctx.send("Updating...")
         git_proc = subprocess.check_output(["git", "pull"]).decode("utf-8")
