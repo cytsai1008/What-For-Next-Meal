@@ -18,7 +18,7 @@ logger = logging.getLogger("discord")
 logger.setLevel(logging.DEBUG)
 if not os.path.exists("Log"):
     os.mkdir("Log")
-handler = logging.FileHandler(filename="Log/discord.log", encoding="utf-8", mode="w")
+handler = logging.FileHandler(filename="Log/discord_wfnm.log", encoding="utf-8", mode="w")
 handler.setFormatter(
     logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s")
 )
